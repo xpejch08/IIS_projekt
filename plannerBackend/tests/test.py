@@ -45,6 +45,18 @@ class TestUserRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
 
     def test_update_user(self):
+        # Test creating a new user
+        dataCreate = {
+            'name': 'newuser',
+            'password': 'password123',
+            'role': 'user',
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post('http://localhost:5000/createUser', json=dataCreate, headers=headers)
+
+        self.assertEqual(response.status_code, 201)
+
         # Test updating a user
         data = {
             'name': 'newuser',
@@ -53,9 +65,14 @@ class TestUserRoutes(unittest.TestCase):
         }
 
         headers = {'Content-Type': 'application/json'}
-        response = requests.put('http://localhost:5000/updateUser/1', json=data, headers=headers)
+        user_name = "newuser"  # Replace with the actual user ID you want to update
+        response = requests.put(f'http://localhost:5000/updateUser/{user_name}', json=data, headers=headers)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)  # 200 for a successful update
+
+        response = requests.delete('http://localhost:5000/deleteUser/newuser')
+
+        self.assertEqual(response.status_code, 204)  # Use 204 for a successful delete
 
     def test_delete_user(self):
         # Test deleting a user
