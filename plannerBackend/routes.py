@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from plannerBackend.db import User, db
+from db import Subject, User, db
 from sqlalchemy.orm.exc import NoResultFound
 
 my_routes = Blueprint('my_routes', __name__)
@@ -71,3 +71,58 @@ def update_user(name):
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
+
+##subject routes
+@my_routes.route('/addSubject', methods=['POST'])
+def add_subject():
+    data = request.get_json()
+    new_subject = Subject(
+        shortcut=data['shortcut'],
+        name=data['name'],
+        annotation=data.get('annotation', ''),  # Optional field
+        credits=data['credits'],
+        id_guarantor=data['id_guarantor']
+    )
+
+    try:
+        # Ensure the guarantor exists before adding the subject
+        guarantor = User.query.get(data['id_guarantor'])
+        if guarantor is None:
+            return jsonify({'error': 'Guarantor user not found'}), 404
+
+        db.session.add(new_subject)
+        db.session.commit()
+        return jsonify(new_subject.as_dict()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/deleteSubject/<int:subject_id>', methods=['DELETE'])
+def delete_subject(subject_id):
+    try:
+        subject = Subject.query.get(subject_id)
+        if subject:
+            db.session.delete(subject)
+            db.session.commit()
+            return '', 204  # No content
+        else:
+            return jsonify({'error': 'Subject not found'}), 404
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getSubject/<int:subject_id>', methods=['GET'])
+def get_subject(subject_id):
+    try:
+        subject = Subject.query.get(subject_id)
+        if subject:
+            return jsonify(subject.as_dict()), 200
+        else:
+            return jsonify({'error': 'Subject not found'}), 404
+    except NoResultFound:
+        return jsonify({'error': 'Subject not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

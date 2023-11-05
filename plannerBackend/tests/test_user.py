@@ -25,7 +25,7 @@ class TestUserRoutes(unittest.TestCase):
         data = {
             'name': 'newuser',
             'password': 'password123',
-            'role': 'user',
+            'role': '5',
         }
 
         headers = {'Content-Type': 'application/json'}
@@ -49,7 +49,7 @@ class TestUserRoutes(unittest.TestCase):
         dataCreate = {
             'name': 'newuser',
             'password': 'password123',
-            'role': 'user',
+            'role': '5',
         }
 
         headers = {'Content-Type': 'application/json'}
@@ -61,7 +61,7 @@ class TestUserRoutes(unittest.TestCase):
         data = {
             'name': 'newuser',
             'password': 'updatedpassword',
-            'role': 'admin',  # Update the role
+            'role': '0',  # Update the role
         }
 
         headers = {'Content-Type': 'application/json'}
