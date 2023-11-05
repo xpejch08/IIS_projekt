@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from plannerBackend.db import User, db
+from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
 
 my_routes = Blueprint('my_routes', __name__)
@@ -71,3 +71,4 @@ def update_user(name):
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
+
