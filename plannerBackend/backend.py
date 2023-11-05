@@ -1,6 +1,6 @@
 from flask import Flask
-from plannerBackend.db import db
-from plannerBackend.routes import my_routes
+from db import db
+from routes import my_routes
 
 def create_app():
     app = Flask(__name__)
@@ -18,4 +18,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

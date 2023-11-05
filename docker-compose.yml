@@ -1,0 +1,21 @@
+version: '3'
+services:
+  backend:
+    container_name: iis_projekt-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - iis_projekt_default
+#  mysql:
+#    container_name: iis_projekt-mysql
+#    image: mysql:latest
+#    environment:
+#      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+#    networks:
+#      - iis_projekt_default
+networks:
+  iis_projekt_default:
+    external: true
