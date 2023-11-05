@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
+<<<<<<< HEAD
 from db import Subject, User, db
+=======
+from db import User, db
+>>>>>>> 1d72136207ac1edcd920ba7118f72953205ae284
 from sqlalchemy.orm.exc import NoResultFound
 
 my_routes = Blueprint('my_routes', __name__)
@@ -72,6 +76,7 @@ def update_user(name):
     else:
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
 
+<<<<<<< HEAD
 ##subject routes
 @my_routes.route('/addSubject', methods=['POST'])
 def add_subject():
@@ -126,3 +131,5 @@ def get_subject(subject_id):
         return jsonify({'error': 'Subject not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+=======
+>>>>>>> 1d72136207ac1edcd920ba7118f72953205ae284

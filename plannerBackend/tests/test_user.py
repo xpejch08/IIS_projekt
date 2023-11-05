@@ -6,6 +6,7 @@ import requests
 
 class TestUserRoutes(unittest.TestCase):
 
+    url = 'http://localhost:5000/'
     @classmethod
     def setUpClass(cls):
         # Start the Flask backend in a separate process
@@ -29,7 +30,7 @@ class TestUserRoutes(unittest.TestCase):
         }
 
         headers = {'Content-Type': 'application/json'}
-        response = requests.post('http://localhost:5000/createUser', json=data, headers=headers)
+        response = requests.post(TestUserRoutes.url+"createUser", json=data, headers=headers)
 
         self.assertEqual(response.status_code, 201)
 
@@ -40,7 +41,7 @@ class TestUserRoutes(unittest.TestCase):
         }
 
         headers = {'Content-Type': 'application/json'}
-        response = requests.post('http://localhost:5000/createUser', json=data, headers=headers)
+        response = requests.post(TestUserRoutes.url+'createUser', json=data, headers=headers)
 
         self.assertEqual(response.status_code, 500)
 
@@ -53,7 +54,7 @@ class TestUserRoutes(unittest.TestCase):
         }
 
         headers = {'Content-Type': 'application/json'}
-        response = requests.post('http://localhost:5000/createUser', json=dataCreate, headers=headers)
+        response = requests.post(TestUserRoutes.url+'createUser', json=dataCreate, headers=headers)
 
         self.assertEqual(response.status_code, 201)
 
