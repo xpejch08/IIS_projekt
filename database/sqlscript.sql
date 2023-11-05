@@ -1,128 +1,142 @@
-Create DATABASE iisdatabase;
+CREATE DATABASE iisdatabase;
 USE iisdatabase;
 
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255),
-  password VARCHAR(255),
-  role VARCHAR  (255)
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255),
+    password VARCHAR(255),
+    role INT,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE rooms (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255),
-  capacity INT
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255),
+    capacity INT,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE Subjects (
-  ID SERIAL PRIMARY KEY,
-  Shortcut VARCHAR(255) UNIQUE NOT NULL,
-  Name VARCHAR(255) NOT NULL,
-  Annotation TEXT,
-  Credits INT,
-  ID_Guarantor INT REFERENCES Users(ID)
-);
-CREATE TABLE TeachingActivities (
-  ID SERIAL PRIMARY KEY,
-  Label VARCHAR(255),
-  Duration INT,
-  Repetition VARCHAR(255),
-  ID_Subject INT REFERENCES Subjects(ID)
-);
-CREATE TABLE SubjectGuardians (
-  ID_Subject INT REFERENCES Subjects(ID),
-  ID_Teacher INT REFERENCES Users(ID),
-  PRIMARY KEY (ID_Subject, ID_Teacher)
-);
-CREATE TABLE CourseInstructors (
-  ID_Teacher INT REFERENCES Users(ID),
-  ID_Subject INT REFERENCES Subjects(ID),
-  PRIMARY KEY (ID_Teacher, ID_Subject)
-);
-CREATE TABLE TeacherPersonalPreferences (
-  ID SERIAL PRIMARY KEY,
-  ID_User INT REFERENCES Users(ID),
-  SatisfactoryDaysAndTimes TEXT
-);
-CREATE TABLE Schedule (
-  ID SERIAL PRIMARY KEY,
-  ID_TeachingActivity INT REFERENCES TeachingActivities(ID),
-  ID_Room INT REFERENCES Rooms(ID),
-  ID_Instructor INT REFERENCES Users(ID),
-  DayAndTime DATETIME,
-  CheckRoomCollisions BOOLEAN,
-  CheckScheduleRequests BOOLEAN
-);
-CREATE TABLE PersonalStudentSchedule (
-  ID SERIAL PRIMARY KEY,
-  ID_User INT REFERENCES Users(ID),
-  ID_TeachingActivity INT REFERENCES TeachingActivities(ID)
-);
-CREATE TABLE SubjectAnnotations (
-  ID SERIAL PRIMARY KEY,
-  ID_Subject INT REFERENCES Subjects(ID),
-  Annotation TEXT
+CREATE TABLE subjects (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    shortcut VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    annotation TEXT,
+    credits INT,
+    id_guarantor BIGINT UNSIGNED,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_guarantor) REFERENCES users (id)
 );
 
+CREATE TABLE teaching_activities (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    label VARCHAR(255),
+    duration INT,
+    repetition VARCHAR(255),
+    id_subject BIGINT UNSIGNED,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_subject) REFERENCES subjects (id)
+);
+
+CREATE TABLE subject_guardians (
+    id_subject BIGINT UNSIGNED,
+    id_teacher BIGINT UNSIGNED,
+    PRIMARY KEY (id_subject, id_teacher),
+    FOREIGN KEY (id_subject) REFERENCES subjects (id),
+    FOREIGN KEY (id_teacher) REFERENCES users (id)
+);
+
+CREATE TABLE course_instructors (
+    id_teacher BIGINT UNSIGNED,
+    id_subject BIGINT UNSIGNED,
+    PRIMARY KEY (id_teacher, id_subject),
+    FOREIGN KEY (id_teacher) REFERENCES users (id),
+    FOREIGN KEY (id_subject) REFERENCES subjects (id)
+);
+
+CREATE TABLE teacher_personal_preferences (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_user BIGINT UNSIGNED,
+    satisfactory_days_and_times TEXT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_user) REFERENCES users (id)
+);
+
+CREATE TABLE schedule (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_teaching_activity BIGINT UNSIGNED,
+    id_room BIGINT UNSIGNED,
+    id_instructor BIGINT UNSIGNED,
+    day_and_time DATETIME,
+    check_room_collisions BOOLEAN,
+    check_schedule_requests BOOLEAN,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_teaching_activity) REFERENCES teaching_activities (id),
+    FOREIGN KEY (id_room) REFERENCES rooms (id),
+    FOREIGN KEY (id_instructor) REFERENCES users (id)
+);
+
+CREATE TABLE personal_student_schedule (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_user BIGINT UNSIGNED,
+    id_teaching_activity BIGINT UNSIGNED,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id_user) REFERENCES users (id),
+    FOREIGN KEY (id_teaching_activity) REFERENCES teaching_activities (id)
+);
 
 -- Insert test data into the users table
+-- Assuming the 'role' field represents some sort of role ID (enumeration).
 INSERT INTO users (name, password, role) VALUES
-  ('Admin User', 'adminpass', 'administrator'),
-  ('Garant User', 'garantpass', 'garant předmětu'),
-  ('Teacher User', 'teacherpass', 'vyučující'),
-  ('Room User', 'roompass', 'rozvrhář'),
-  ('Student User', 'studentpass', 'student'),
-  ('Unregistered User', 'unregpass', 'neregistrovaný');
+    ('Admin User', 'adminpass', 1),        -- Assuming 1 represents 'administrator'
+    ('Garant User', 'garantpass', 2),      -- Assuming 2 represents 'garant předmětu'
+    ('Teacher User', 'teacherpass', 3),    -- Assuming 3 represents 'vyučující'
+    ('Room User', 'roompass', 4),          -- Assuming 4 represents 'rozvrhář'
+    ('Student User', 'studentpass', 5),    -- Assuming 5 represents 'student'
+    ('Unregistered User', 'unregpass', 6); -- Assuming 6 represents 'neregistrovaný'
 
 -- Insert test data into the rooms table
 INSERT INTO rooms (title, capacity) VALUES
-  ('Room A', 30),
-  ('Room B', 20),
-  ('Room C', 25);
+    ('Room A', 30),
+    ('Room B', 20),
+    ('Room C', 25);
 
--- Insert test data into the Subjects table
-INSERT INTO Subjects (Shortcut, Name, Annotation, Credits, ID_Guarantor) VALUES
-  ('MATH101', 'Mathematics 101', 'Introduction to basic math concepts', 3, 2),
-  ('PHYS101', 'Physics 101', 'Fundamental principles of physics', 3, 3),
-  ('CHEM101', 'Chemistry 101', 'Basic chemistry concepts', 3, 3);
+-- Insert test data into the subjects table
+-- The values for ID_Guarantor must match an 'id' in the 'users' table. Adjust as necessary.
+INSERT INTO subjects (shortcut, name, annotation, credits, id_guarantor) VALUES
+    ('MATH101', 'Mathematics 101', 'Introduction to basic math concepts', 3, 1),
+    ('PHYS101', 'Physics 101', 'Fundamental principles of physics', 3, 2),
+    ('CHEM101', 'Chemistry 101', 'Basic chemistry concepts', 3, 2);
 
--- Insert test data into the TeachingActivities table
-INSERT INTO TeachingActivities (Label, Duration, Repetition, ID_Subject) VALUES
-  ('Lecture 1', 90, 'every week', 1),
-  ('Lab 1', 120, 'every week', 2),
-  ('Seminar 1', 90, 'odd weeks', 3);
+-- Insert test data into the teaching_activities table
+INSERT INTO teaching_activities (label, duration, repetition, id_subject) VALUES
+    ('Lecture 1', 90, 'every week', 1),
+    ('Lab 1', 120, 'every week', 2),
+    ('Seminar 1', 90, 'odd weeks', 3);
 
--- Insert test data into the SubjectGuardians table
-INSERT INTO SubjectGuardians (ID_Subject, ID_Teacher) VALUES
-  (1, 3),
-  (2, 4),
-  (3, 4);
+-- Insert test data into the subject_guardians table
+INSERT INTO subject_guardians (id_subject, id_teacher) VALUES
+    (1, 3),
+    (2, 3),
+    (3, 3);
 
--- Insert test data into the CourseInstructors table
-INSERT INTO CourseInstructors (ID_Teacher, ID_Subject) VALUES
-  (3, 1),
-  (4, 2),
-  (4, 3);
+-- Insert test data into the course_instructors table
+INSERT INTO course_instructors (id_teacher, id_subject) VALUES
+    (3, 1),
+    (3, 2),
+    (3, 3);
 
--- Insert test data into the TeacherPersonalPreferences table
-INSERT INTO TeacherPersonalPreferences (ID_User, SatisfactoryDaysAndTimes) VALUES
-  (3, 'Monday morning, Wednesday afternoon'),
-  (4, 'Tuesday morning, Thursday afternoon');
+-- Insert test data into the teacher_personal_preferences table
+INSERT INTO teacher_personal_preferences (id_user, satisfactory_days_and_times) VALUES
+    (3, 'Monday morning, Wednesday afternoon'),
+    (3, 'Tuesday morning, Thursday afternoon');
 
--- Insert test data into the Schedule table
-INSERT INTO Schedule (ID_TeachingActivity, ID_Room, ID_Instructor, DayAndTime, CheckRoomCollisions, CheckScheduleRequests) VALUES
-  (1, 1, 3, '2023-10-16 09:00:00', false, true),
-  (2, 2, 4, '2023-10-17 13:00:00', false, true),
-  (3, 3, 4, '2023-10-18 10:00:00', false, true);
+-- Insert test data into the schedule table
+INSERT INTO schedule (id_teaching_activity, id_room, id_instructor, day_and_time, check_room_collisions, check_schedule_requests) VALUES
+    (1, 1, 3, '2023-10-16 09:00:00', false, true),
+    (2, 2, 3, '2023-10-17 13:00:00', false, true),
+    (3, 3, 3, '2023-10-18 10:00:00', false, true);
 
--- Insert test data into the PersonalStudentSchedule table
-INSERT INTO PersonalStudentSchedule (ID_User, ID_TeachingActivity) VALUES
-  (5, 1),
-  (5, 3);
-
--- Insert test data into the SubjectAnnotations table
-INSERT INTO SubjectAnnotations (ID_Subject, Annotation) VALUES
-  (1, 'This course covers basic math topics.'),
-  (2, 'Introduction to fundamental physics principles.'),
-  (3, 'Learn the basics of chemistry.');
-
+-- Insert test data into the personal_student_schedule table
+INSERT INTO personal_student_schedule (id_user, id_teaching_activity) VALUES
+    (5, 1),
+    (5, 3);
