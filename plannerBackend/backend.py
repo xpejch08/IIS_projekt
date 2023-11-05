@@ -4,7 +4,11 @@ from routes import my_routes
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/iisdatabase'
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
+        "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"
+        "defaultdb?ssl_ca=ca.pem"
+    )
   # MySQL database
     db.init_app(app)
 

@@ -1,5 +1,4 @@
-CREATE DATABASE iisdatabase;
-USE iisdatabase;
+USE defaultdb;
 
 CREATE TABLE users (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

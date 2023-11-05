@@ -31,8 +31,17 @@ class TestUserRoutes(unittest.TestCase):
 
         headers = {'Content-Type': 'application/json'}
         response = requests.post(TestUserRoutes.url+"createUser", json=data, headers=headers)
-
         self.assertEqual(response.status_code, 201)
+
+        data2 = {
+            'name': 'newuser2',
+            'password': 'password123',
+            'role': '5',
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(TestUserRoutes.url + "createUser", json=data2, headers=headers)
+
 
     def test_create_user_invalid_data(self):
         # Test creating a user with missing data
