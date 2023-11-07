@@ -4,11 +4,15 @@ services:
     container_name: iis_projekt-backend
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: plannerBackend/Dockerfile  # Adjust the Dockerfile path
     ports:
       - "5000:5000"
+    volumes:
+        - ./ca.pem:/plannerBackend/ca.pem
+          # Mount ca.pem from your local directory
     networks:
       - iis_projekt_default
+# Uncomment this section if you want to include MySQL
 #  mysql:
 #    container_name: iis_projekt-mysql
 #    image: mysql:latest
