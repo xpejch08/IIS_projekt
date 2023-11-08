@@ -33,3 +33,17 @@ class Subject(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
+class Room(db.Model):
+    __tablename__ = 'rooms'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    capacity = db.Column(db.Integer)
+
+    def as_dict(self):
+        return {
+                'id': self.id,
+                'title': self.title,
+                'capacity': self.capacity
+        }

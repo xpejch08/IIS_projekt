@@ -11,7 +11,7 @@ class TestAppRoutes(unittest.TestCase):
         # Start the Flask backend in a separate process
         cls.flask_process = subprocess.Popen(['python', '../backend.py'])
         # Define the base URL variable
-        cls.BASE_URL = 'http://localhost:5000'
+        cls.BASE_URL = 'http://172.18.0.2:5000/'
         # Give some time for the Flask app to start
         time.sleep(2)
 

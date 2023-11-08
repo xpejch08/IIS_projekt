@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from db import Subject, User, db
+from db import Subject, User, db, Room
 from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -125,4 +125,23 @@ def get_subject(subject_id):
     except NoResultFound:
         return jsonify({'error': 'Subject not found'}), 404
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+######################################################################################
+###ROOMS ROUTES
+
+
+@my_routes.route('/createRoom', methods=['POST'])
+def create_room():
+    data = request.get_json()
+    new_room = Room(
+        title=data['title'],
+        capacity=data['capacity'],
+    )
+    try:
+        db.session.add(new_room)
+        db.session.commit()
+        return jsonify(new_room.as_dict()), 201
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500

@@ -4,7 +4,7 @@ services:
     container_name: iis_projekt-backend
     build:
       context: .
-      dockerfile: plannerBackend/Dockerfile  # Adjust the Dockerfile path
+      dockerfile: Dockerfile  # Adjust the Dockerfile path
     ports:
       - "5000:5000"
     volumes:
