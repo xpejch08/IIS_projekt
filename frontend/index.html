@@ -49,12 +49,12 @@ $(document).ready(function() {
 
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:5000/login',
+      url: 'http://localhost:5000/createUser',
       contentType: 'application/json',
       data: JSON.stringify(userData),
       success: function(response) {
         console.log(response);
-        // Handle success (perhaps redirect or display a success message)
+        window.location.href="view.html";
       },
       error: function(xhr, status, error) {
         console.error(error);

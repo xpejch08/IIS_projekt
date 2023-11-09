@@ -20,13 +20,7 @@
       <label for="pwd">Password:</label>
       <input style="width: 300px;" type="password" class="form-control" id="password" required>
     </div>
-    <div class="form-group">
-      <label for="role">Role:</label>
-      <select style="width: 300px;" class="form-control" id="role">
-        <option value="5">User</option>
-        <!-- More roles here -->
-      </select>
-    </div>
+    
     <button style="width: 300px;" type="submit" class="btn btn-primary">Log in</button>
     <a href="index.html">Not yet registered?</a>
   </form>
@@ -59,7 +53,14 @@ $(document).ready(function() {
       data: JSON.stringify(userData),
       success: function(response) {
         console.log(response);
+        if(userData.role == 1){ //admin
+          window.location.href="view.html";
+        }
+        else{
+          window.location.href="info.html";
+        }
         // Handle success (perhaps redirect or display a success message)
+        window.location.href="info.html";
       },
       error: function(xhr, status, error) {
         console.error(error);
