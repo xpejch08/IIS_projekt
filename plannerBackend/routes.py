@@ -155,7 +155,7 @@ def create_room_admin():
 @my_routes.route('/deleteRoomAdmin/<string:title>', methods=['DELETE'])
 def delete_room_admin(title):
     # Attempt to find the room by its ID
-    room_to_delete = User.query.filter_by(title=title).first()
+    room_to_delete = Room.query.filter_by(title=title).first()
 
     if room_to_delete is None:
         # If no room is found, return a 404 error
