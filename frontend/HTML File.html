@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create User</title>
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Create User</h2>
+  <form id="userForm">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" class="form-control" id="name" required>
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label>
+      <input type="password" class="form-control" id="password" required>
+    </div>
+    <div class="form-group">
+      <label for="role">Role:</label>
+      <select class="form-control" id="role">
+        <option value="5">User</option>
+        <!-- More roles here -->
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#userForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var userData = {
+      name: $('#name').val(),
+      password: $('#password').val(),
+      role: $('#role').val()
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: 'http://localhost:5000/createUser',
+      contentType: 'application/json',
+      data: JSON.stringify(userData),
+      success: function(response) {
+        console.log(response);
+        // Handle success (perhaps redirect or display a success message)
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        // Handle error (display error message to the user)
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
