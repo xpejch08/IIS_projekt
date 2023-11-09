@@ -12,7 +12,7 @@ def create_user():
     data = request.get_json()
 
     # Assuming your JSON data includes 'name', 'password', and 'role' fields
-    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=data['role'])
+    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=5)
 
     try:
         db.session.add(new_user)
@@ -35,7 +35,7 @@ def login():
     if user and check_password_hash(user.password, password):
         session['user_id'] = user.id
         session['user_name'] = user.name
-        return jsonify({'success': True}), 20  # Redirecting to the path that serves the HTML file
+        return jsonify({'success': True, 'user.role': user.role}), 200  # Redirecting to the path that serves the HTML file
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
 

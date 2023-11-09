@@ -1,4 +1,5 @@
 .idea
 backend
 IISVENV
+__pycache__/
 _pycache_
