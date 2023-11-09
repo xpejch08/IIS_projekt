@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 from db import Subject, User, db, Room
 from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,7 +12,7 @@ def create_user():
     data = request.get_json()
 
     # Assuming your JSON data includes 'name', 'password', and 'role' fields
-    new_user = User(name=data['name'], password=data['password'], role=data['role'])
+    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=data['role'])
 
     try:
         db.session.add(new_user)
@@ -20,6 +21,23 @@ def create_user():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('name')
+    password = data.get('password')
+
+    # Find the user by username
+    user = User.query.filter_by(name=username).first()
+
+    if user and check_password_hash(user.password, password):
+        session['user_id'] = user.id
+        session['user_name'] = user.name
+        return jsonify({'success': True}), 20  # Redirecting to the path that serves the HTML file
+    else:
+        return jsonify({'error': 'Invalid username or password'}), 401
 
 
 @my_routes.route('/deleteUser/<string:name>', methods=['DELETE'])
@@ -72,6 +90,7 @@ def update_user(name):
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
+########################################################################################
 ##subject routes
 @my_routes.route('/addSubject', methods=['POST'])
 def add_subject():

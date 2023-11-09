@@ -6,6 +6,7 @@ from flask_cors import CORS
 def create_app():
     app = Flask(__name__)
     CORS(app)
+    app.secret_key='noonecangesthisiiskey'
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
         "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"
