@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rozvrchol</title>
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Delete subject</h2>
+  <form id="subjectForm">
+    <div class="form-group">
+      <label for="shortcut">Shortcut:</label>
+      <input style="width: 300px;" type="text" class="form-control" id="shortcut" required>
+    </div>
+      
+    <button type="submit" class="btn btn-primary">Delete subject</button>
+    
+  </form>
+  <div style="padding-top: 20px">
+    <form id="guest"action="adminview.html">
+      <input type="submit" class="btn btn-secondary" value="Back to admin menu" />
+    </form>
+  </div>
+  
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#subjectForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var subjectData = {
+      shortcut: $('#shortcut').val()
+    };
+
+    $.ajax({
+      type: 'DELETE',
+      url: 'http://localhost:5000/deleteSubject/'+subjectData.shortcut,
+      contentType: 'application/json',
+      data: JSON.stringify(subjectData),
+      success: function(response) {
+        console.log(response);
+        
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        // Handle error (display error message to the user)
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
