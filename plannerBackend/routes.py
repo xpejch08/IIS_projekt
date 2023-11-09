@@ -176,7 +176,7 @@ def update_user_admin(name):
 
     if user is not None:
         # Update the user's attributes if they are provided in the JSON data
-        if 'name' in data:
+        if 'name' in data and data['name'] != "":
             user.name = data['name']
         if 'password' in data:
             hashed_password = generate_password_hash(data['password'])
