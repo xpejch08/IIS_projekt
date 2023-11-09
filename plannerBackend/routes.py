@@ -40,21 +40,6 @@ def login():
         return jsonify({'error': 'Invalid username or password'}), 401
 
 
-@my_routes.route('/deleteUser/<string:name>', methods=['DELETE'])
-def delete_user(name):
-    try:
-        user = User.query.filter_by(name=name).first()
-        if user is not None:
-            db.session.delete(user)
-            db.session.commit()
-            return jsonify(user.as_dict()), 204
-        else:
-            return jsonify({'error': 'No user named ' + name}), 404
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-
 @my_routes.route('/getUser/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     try:
@@ -78,7 +63,8 @@ def update_user(name):
         if 'name' in data:
             user.name = data['name']
         if 'password' in data:
-            user.password = data['password']
+            hashed_password = generate_password_hash(data['password'])
+            user.password = hashed_password
         if 'role' in data:
             user.role = data['role']
 
@@ -150,8 +136,8 @@ def get_subject(subject_id):
 ###ROOMS ROUTES
 
 
-@my_routes.route('/createRoom', methods=['POST'])
-def create_room():
+@my_routes.route('/createRoomAdmin', methods=['POST'])
+def create_room_admin():
     data = request.get_json()
     new_room = Room(
         title=data['title'],
@@ -164,3 +150,62 @@ def create_room():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+######################################################################################
+###Admin Routes
+@my_routes.route('/createUserAdmin', methods=['POST'])
+def create_user_admin():
+    data = request.get_json()
+
+    # Assuming your JSON data includes 'name', 'password', and 'role' fields
+    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=data['role'])
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify(new_user.as_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@my_routes.route('/updateUserAdmin/<string:name>', methods=['PUT'])
+def update_user_admin(name):
+    data = request.get_json()
+    user = User.query.filter_by(name=name).first()
+
+    if user is not None:
+        # Update the user's attributes if they are provided in the JSON data
+        if 'name' in data:
+            user.name = data['name']
+        if 'password' in data:
+            hashed_password = generate_password_hash(data['password'])
+            user.password = hashed_password
+        if 'role' in data:
+            user.role = data['role']
+
+        try:
+            db.session.commit()
+            return jsonify(user.as_dict()), 200  # 200 for a successful update
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
+
+@my_routes.route('/deleteUserAdmin/<string:name>', methods=['DELETE'])
+def delete_user_admin(name):
+    try:
+        user = User.query.filter_by(name=name).first()
+        if user is not None:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify(user.as_dict()), 204
+        else:
+            return jsonify({'error': 'No user named ' + name}), 404
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+
