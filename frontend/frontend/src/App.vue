@@ -55,8 +55,11 @@ export default {
   },
   methods: {
     createUser() {
+      const headers = {
+        "Content-Type": "application/json",
+      };
       axios
-        .post("/createUser", this.userForm)
+        .post("http://localhost:5000/createUser", this.userForm, { headers })
         .then((response) => {
           // Handle response
           console.log(response.data);

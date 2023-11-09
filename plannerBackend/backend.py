@@ -1,9 +1,11 @@
 from flask import Flask
 from db import db
 from routes import my_routes
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
         "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"
