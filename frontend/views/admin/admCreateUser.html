@@ -59,7 +59,7 @@ $(document).ready(function() {
 
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:5000/createUserAdmin/'+userData.name,
+      url: 'http://localhost:5000/createUserAdmin',
       contentType: 'application/json',
       data: JSON.stringify(userData),
       success: function(response) {

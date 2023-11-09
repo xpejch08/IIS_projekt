@@ -47,7 +47,7 @@ $(document).ready(function() {
 
     $.ajax({
       type: 'POST',
-      url: 'http://localhost:5000/createRoomAdmin/'+roomData.title,
+      url: 'http://localhost:5000/createRoomAdmin',
       contentType: 'application/json',
       data: JSON.stringify(roomData),
       success: function(response) {
