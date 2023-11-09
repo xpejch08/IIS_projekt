@@ -78,6 +78,8 @@ def update_user(name):
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
 ########################################################################################
 ##subject routes
+
+
 @my_routes.route('/addSubject', methods=['POST'])
 def add_subject():
     data = request.get_json()
@@ -104,10 +106,10 @@ def add_subject():
         return jsonify({'error': str(e)}), 500
 
 
-@my_routes.route('/deleteSubject/<int:subject_id>', methods=['DELETE'])
-def delete_subject(subject_id):
+@my_routes.route('/deleteSubject/<string:shortcut>', methods=['DELETE'])
+def delete_subject(shortcut):
     try:
-        subject = Subject.query.get(subject_id)
+        subject = Subject.query.filter_by(shortcut=shortcut).first()
         if subject:
             db.session.delete(subject)
             db.session.commit()
