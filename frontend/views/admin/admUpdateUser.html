@@ -13,12 +13,16 @@
   <h2>Update user</h2>
   <form id="userForm">
     <div class="form-group">
-      <label for="name">Name:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="name" required>
+      <label for="oldname">Name:</label>
+      <input style="width: 300px;" type="text" class="form-control" id="oldname" required>
+    </div>
+    <div class="form-group">
+      <label for="name">New name:</label>
+      <input style="width: 300px;" type="text" class="form-control" id="name">
     </div>
     <div class="form-group">
       <label for="pwd">New password:</label>
-      <input style="width: 300px;" type="password" class="form-control" id="password" required>
+      <input style="width: 300px;" type="password" class="form-control" id="password">
     </div>
     <div class="form-group">
       <label for="role">New role:</label>
@@ -53,13 +57,14 @@ $(document).ready(function() {
 
     var userData = {
       name: $('#name').val(),
+      oldname: $('#oldname').val(),
       password: $('#password').val(),
       role: $('#role').val() 
     };
 
     $.ajax({
-      type: 'POST',
-      url: 'http://localhost:5000/updateUserAdmin/'+userData.name,
+      type: 'PUT',
+      url: 'http://localhost:5000/updateUserAdmin/'+userData.oldname,
       contentType: 'application/json',
       data: JSON.stringify(userData),
       success: function(response) {

@@ -44,7 +44,7 @@ $(document).ready(function() {
     };
 
     $.ajax({
-      type: 'POST',
+      type: 'DELETE',
       url: 'http://localhost:5000/deleteUserAdmin/'+userData.name,
       contentType: 'application/json',
       data: JSON.stringify(userData),
