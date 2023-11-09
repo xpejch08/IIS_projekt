@@ -152,6 +152,28 @@ def create_room_admin():
         return jsonify({'error': str(e)}), 500
 
 
+@my_routes.route('/deleteRoomAdmin/<string:title>', methods=['DELETE'])
+def delete_room_admin(title):
+    # Attempt to find the room by its ID
+    room_to_delete = User.query.filter_by(title=title).first()
+
+    if room_to_delete is None:
+        # If no room is found, return a 404 error
+        return jsonify({'error': 'Room not found'}), 404
+
+    try:
+        # If the room is found, delete it from the database
+        db.session.delete(room_to_delete)
+        db.session.commit()
+        # Return a 200 status code to indicate success
+        return jsonify({'success': 'Room deleted'}), 200
+    except Exception as e:
+        # If there's an error during the deletion, rollback the session
+        db.session.rollback()
+        # Return a 500 internal server error status code
+        return jsonify({'error': str(e)}), 500
+
+
 ######################################################################################
 ###Admin Routes
 @my_routes.route('/createUserAdmin', methods=['POST'])
