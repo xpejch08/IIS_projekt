@@ -1,2 +1,2 @@
-Use iisdatabase;
-drop database iisdatabase;
+Use defaultdb;
+drop database defaultdb;

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import Subject, User, db, Room
+from db import Subject, User, db, Room, SubjectGuardians
 from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -83,19 +83,21 @@ def update_user(name):
 @my_routes.route('/addSubject', methods=['POST'])
 def add_subject():
     data = request.get_json()
-    new_subject = Subject(
-        shortcut=data['shortcut'],
-        name=data['name'],
-        annotation=data.get('annotation', ''),  # Optional field
-        credits=data['credits'],
-        id_guarantor=data['id_guarantor']
-    )
+    guarantor_name = data['id_guarantor']  # Get the guarantor's name
 
     try:
         # Ensure the guarantor exists before adding the subject
-        guarantor = User.query.get(data['id_guarantor'])
+        guarantor = User.query.filter_by(name=guarantor_name).first()
         if guarantor is None:
             return jsonify({'error': 'Guarantor user not found'}), 404
+
+        new_subject = Subject(
+            shortcut=data['shortcut'],
+            name=data['name'],
+            annotation=data.get('annotation', ''),
+            credits=data['credits'],
+            guarantor_name=guarantor_name  # Use the guarantor's name as the foreign key
+        )
 
         db.session.add(new_subject)
         db.session.commit()
@@ -111,9 +113,22 @@ def delete_subject(shortcut):
     try:
         subject = Subject.query.filter_by(shortcut=shortcut).first()
         if subject:
+            # Check for related subject_guardians entries
+            related_guardians = SubjectGuardians.query.filter_by(shortcut=shortcut).all()
+
+            if related_guardians:
+                # Option 1: Delete related subject_guardians entries
+                for guardian in related_guardians:
+                    db.session.delete(guardian)
+
+                # Option 2: Update related subject_guardians entries
+                # for guardian in related_guardians:
+                #     guardian.subject_id = None  # or set to a new value
+                #     db.session.add(guardian)
+
             db.session.delete(subject)
             db.session.commit()
-            return '', 204  # No content
+            return jsonify({'success': 'Subject deleted'}), 204  # No content
         else:
             return jsonify({'error': 'Subject not found'}), 404
     except Exception as e:
@@ -172,6 +187,7 @@ def delete_room_admin(title):
     except Exception as e:
         # If there's an error during the deletion, rollback the session
         db.session.rollback()
+        print(f"Error: {e}")
         # Return a 500 internal server error status code
         return jsonify({'error': str(e)}), 500
 
@@ -192,6 +208,7 @@ def create_user_admin():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 @my_routes.route('/updateUserAdmin/<string:name>', methods=['PUT'])
 def update_user_admin(name):
@@ -231,5 +248,6 @@ def delete_user_admin(name):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+######################################################################################
 
 
