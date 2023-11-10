@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import Subject, User, db, Room, SubjectGuardians
+from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule
 from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -249,5 +249,87 @@ def delete_user_admin(name):
         return jsonify({'error': str(e)}), 500
 
 ######################################################################################
+
+
+@my_routes.route('/setGuarantorOfSubject', methods=['PUT'])
+def set_guarantor_of_subject():
+    data = request.get_json()
+    subject_shortcut = data.get('shortcut')
+    new_guarantor_name = data.get('guarantor_name')
+
+    # Check if the subject exists
+    subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
+    if not subject:
+        return jsonify({'error': 'Subject not found'}), 404
+
+    # Check if the new guarantor exists
+    new_guarantor = User.query.filter_by(name=new_guarantor_name).first()
+    if not new_guarantor:
+        return jsonify({'error': 'New guarantor not found'}), 404
+
+    # Update the guarantor of the subject
+    subject.guarantor_name = new_guarantor_name
+
+    try:
+        db.session.commit()
+        return jsonify({'success': 'Guarantor updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+######################################################################################
+
+
+@my_routes.route('/addTeachingActivity', methods=['POST'])
+def add_teaching_activity():
+    data = request.get_json()
+
+    # Extract data from request
+    label = data['label']
+    duration = data['duration']
+    repetition = data['repetition']
+    subject_shortcut = data['subject_shortcut']
+
+    # Validate data (optional, but recommended)
+    # For example, check if the subject exists, the duration is a positive number, etc.
+
+    try:
+        querry = Subject.query.filter_by(shortcut=subject_shortcut).first()
+        if querry is None:
+            return jsonify({'error': 'subject not found'}), 404
+
+        new_teaching_activity = TeachingActivity(
+            label=label,
+            duration=duration,
+            repetition=repetition,
+            shortcut=subject_shortcut
+        )
+        # Add the new object to the database
+        db.session.add(new_teaching_activity)
+        db.session.commit()
+        return jsonify(new_teaching_activity.as_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/deleteTeachingActivity/<string:label>', methods=['DELETE'])
+def delete_teaching_activity(label):
+    # Try to find the teaching activity by its ID
+    teaching_activity = TeachingActivity.query.filter_by(label=label).first()
+
+    if teaching_activity is None:
+        # If the teaching activity doesn't exist, return a 404 error
+        return jsonify({'error': 'Teaching activity not found'}), 404
+
+    try:
+        # If the teaching activity is found, delete it
+        db.session.delete(teaching_activity)
+        db.session.commit()
+        return jsonify({'success': 'Teaching activity deleted'}), 200
+    except Exception as e:
+        # If there's an error during the deletion, rollback the session
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 

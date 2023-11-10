@@ -2,10 +2,13 @@ from flask import Flask
 from db import db
 from routes import my_routes
 from flask_cors import CORS
+from flasgger import Swagger
+
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
+    swagger = Swagger(app)
     app.secret_key='noonecangesthisiiskey'
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"

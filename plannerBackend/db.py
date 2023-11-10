@@ -75,7 +75,7 @@ class TeachingActivity(db.Model):
     label = db.Column(db.String(255))
     duration = db.Column(db.Integer)
     repetition = db.Column(db.String(255))
-    subject_shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut'))
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut'))
 
     # Relationships
     schedules = db.relationship('Schedule', back_populates='teaching_activity')
@@ -87,7 +87,7 @@ class TeachingActivity(db.Model):
             'label': self.label,
             'duration': self.duration,
             'repetition': self.repetition,
-            'subject_shortcut': self.subject_shortcut,
+            'shortcut': self.shortcut,
         }
 
 
