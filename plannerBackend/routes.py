@@ -9,6 +9,30 @@ my_routes = Blueprint('my_routes', __name__)
 
 @my_routes.route('/createUser', methods=['POST'])
 def create_user():
+    """
+        Create a new user
+        ---
+        tags:
+          - User Management
+        parameters:
+          - name: name
+            in: body
+            type: string
+            required: true
+          - name: password
+            in: body
+            type: string
+            required: true
+          - name: role
+            in: body
+            type: integer
+            required: true
+        responses:
+          201:
+            description: User successfully created
+          500:
+            description: Error in user creation
+        """
     data = request.get_json()
 
     # Assuming your JSON data includes 'name', 'password', and 'role' fields
@@ -253,6 +277,34 @@ def delete_user_admin(name):
 
 @my_routes.route('/setGuarantorOfSubject', methods=['PUT'])
 def set_guarantor_of_subject():
+    """
+        Set or update the guarantor of a subject
+        ---
+        tags:
+          - Subject Management
+        parameters:
+          - in: body
+            name: body
+            schema:
+              type: object
+              required:
+                - shortcut
+                - guarantor_name
+              properties:
+                shortcut:
+                  type: string
+                  description: The shortcut of the subject
+                guarantor_name:
+                  type: string
+                  description: The name of the new guarantor
+        responses:
+          200:
+            description: Guarantor updated successfully
+          404:
+            description: Subject or new guarantor not found
+          500:
+            description: Internal server error
+        """
     data = request.get_json()
     subject_shortcut = data.get('shortcut')
     new_guarantor_name = data.get('guarantor_name')
@@ -282,6 +334,42 @@ def set_guarantor_of_subject():
 
 @my_routes.route('/addTeachingActivity', methods=['POST'])
 def add_teaching_activity():
+    """
+        Add a new teaching activity
+        ---
+        tags:
+          - Teaching Activities
+        parameters:
+          - in: body
+            name: body
+            schema:
+              type: object
+              required:
+                - label
+                - duration
+                - repetition
+                - subject_shortcut
+              properties:
+                label:
+                  type: string
+                  description: Label of the teaching activity
+                duration:
+                  type: integer
+                  description: Duration of the activity
+                repetition:
+                  type: string
+                  description: Repetition pattern of the activity
+                subject_shortcut:
+                  type: string
+                  description: The subject's shortcut associated with the activity
+        responses:
+          201:
+            description: Teaching activity added successfully
+          404:
+            description: Subject not found
+          500:
+            description: Internal server error
+        """
     data = request.get_json()
 
     # Extract data from request
@@ -315,6 +403,25 @@ def add_teaching_activity():
 
 @my_routes.route('/deleteTeachingActivity/<string:label>', methods=['DELETE'])
 def delete_teaching_activity(label):
+    """
+        Delete a teaching activity by its label
+        ---
+        tags:
+          - Teaching Activities
+        parameters:
+          - name: label
+            in: path
+            type: string
+            required: true
+            description: Label of the teaching activity to delete
+        responses:
+          200:
+            description: Teaching activity deleted successfully
+          404:
+            description: Teaching activity not found
+          500:
+            description: Internal server error
+        """
     # Try to find the teaching activity by its ID
     teaching_activity = TeachingActivity.query.filter_by(label=label).first()
 
