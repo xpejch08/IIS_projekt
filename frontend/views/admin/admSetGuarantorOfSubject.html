@@ -10,29 +10,17 @@
 <body>
 
 <div class="container">
-  <h2>Create Subject</h2>
-  <form id="subjectForm">
+  <h2>Set guarantor to a subject</h2>
+  <form id="userForm">
     <div class="form-group">
-      <label for="shortcut">Shortcut:</label>
+      <label for="guarantor_name">Name of the future guarantor:</label>
+      <input style="width: 300px;" type="text" class="form-control" id="guarantor_name" required>
+    </div>
+    <div class="form-group">
+      <label for="shortcut">Subject's shortcut:</label>
       <input style="width: 300px;" type="text" class="form-control" id="shortcut" required>
     </div>
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="name" required>
-    </div> 
-    <div class="form-group">
-      <label for="annotation">Annotation:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="annotation">
-    </div>
-    <div class="form-group">
-      <label for="credits">Credits:</label>
-      <input style="width: 300px;" type="number" class="form-control" id="credits" required>
-    </div>
-    <div class="form-group">
-      <label for="id_guarantor">Garant:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="id_guarantor" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Create Subject</button>
+    <button type="submit" class="btn btn-primary">Update user</button>
     
   </form>
   <div style="padding-top: 20px">
@@ -80,23 +68,19 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
-  $('#subjectForm').on('submit', function(e) {
+  $('#userForm').on('submit', function(e) {
     e.preventDefault();
 
-    var subjectData = {
-      name: $('#name').val(),
-        shortcut: $('#shortcut').val(),
-        annotation: $('#annotation').val(),
-        credits: $('#credits').val(),
-        id_guarantor: $('#id_guarantor').val()
-
+    var userData = {
+        guarantor_name: $('#guarantor_name').val(),
+        shortcut: $('#shortcut').val() 
     };
 
     $.ajax({
-      type: 'POST',
-      url: 'http://localhost:5000/addSubject',
+      type: 'PUT',
+      url: 'http://localhost:5000/setGuarantorOfSubject/'+userData.guarantor_name,
       contentType: 'application/json',
-      data: JSON.stringify(subjectData),
+      data: JSON.stringify(userData),
       success: function(response) {
         console.log(response);
         openDynamicContentModal('Operation was successful!', true);

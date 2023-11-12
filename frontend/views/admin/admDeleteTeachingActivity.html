@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rozvrchol</title>
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+  <h2>Delete teaching activity</h2>
+  <form id="teachingactivityForm">
+    <div class="form-group">
+      <label for="label">Label:</label>
+      <input style="width: 300px;" type="text" class="form-control" id="label" required>
+    </div>
+      
+    <button type="submit" class="btn btn-primary">Delete teaching activity</button>
+    
+  </form>
+  <div style="padding-top: 20px">
+    <form id="guest"action="adminview.html">
+      <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
+    </form>
+  </div>
+  <!-- Modal #########################################################################################################-->
+  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Your operation was successful.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#teachingactivityForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var teachingactivityData = {
+      label: $('#label').val()
+    };
+
+    $.ajax({
+      type: 'DELETE',
+      url: 'http://localhost:5000/deleteTeachingActivity/'+teachingactivityData.label,
+      contentType: 'application/json',
+      data: JSON.stringify(teachingactivityData),
+      success: function(response) {
+        console.log(response);
+        $('#successModal').modal('show');
+        
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        // Handle error (display error message to the user)
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

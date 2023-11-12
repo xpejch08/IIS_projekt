@@ -25,7 +25,25 @@
       <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
     </form>
   </div>
-  
+  <!-- Modal #########################################################################################################-->
+  <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be dynamically updated here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <!-- Include jQuery and Bootstrap JS -->
@@ -33,6 +51,19 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+
+function openDynamicContentModal(message, isSuccess) {
+   // Set the dynamic content
+   $('#modalContent').html('<p>' + message + '</p>');
+   // Set the modal title and style based on success
+   var modalTitle = isSuccess ? 'Success' : 'Error';
+   var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
+   // Update modal title and header color
+   $('.modal-title').text(modalTitle);
+   $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
+   // Show the modal
+   $('#dynamicContentModal').modal('show');
+}
 $(document).ready(function() {
   $('#roomForm').on('submit', function(e) {
     e.preventDefault();
@@ -49,11 +80,11 @@ $(document).ready(function() {
       data: JSON.stringify(roomData),
       success: function(response) {
         console.log(response);
-        
+        openDynamicContentModal('Operation was successful!', true);
       },
       error: function(xhr, status, error) {
         console.error(error);
-        // Handle error (display error message to the user)
+        openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
       }
     });
   });

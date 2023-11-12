@@ -11,7 +11,7 @@
 
 <div class="container">
   <h2>Add teaching activity</h2>
-  <form id="subjectForm">
+  <form id="teachingactivityForm">
     <div class="form-group">
       <label for="duration">Duration:</label>
       <input style="width: 300px;" type="number" class="form-control" id="duration" required>
@@ -21,9 +21,14 @@
       <input style="width: 300px;" type="text" class="form-control" id="label" required>
     </div> 
     <div class="form-group">
-      <label for="repetition">Repetition:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="repetition">
-    </div>
+        <label for="repetition">Repetition:</label>
+        <select style="width: 300px;" class="form-control" id="repetition" required>
+            <option value="every week">Every week</option>
+            <option value="odd weeks">Odd weeks</option>
+            <option value="even weeks">Even weeks</option>
+            <option value="one time">One time</option>
+        </select>
+      </div>
     <div class="form-group">
       <label for="subject_shortcut">Subject shortcut:</label>
       <input style="width: 300px;" type="text" class="form-control" id="subject_shortcut" required>
@@ -36,7 +41,25 @@
       <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
     </form>
   </div>
-  
+  <!-- Modal #########################################################################################################-->
+  <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be dynamically updated here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <!-- Include jQuery and Bootstrap JS -->
@@ -44,11 +67,25 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+
+function openDynamicContentModal(message, isSuccess) {
+   // Set the dynamic content
+   $('#modalContent').html('<p>' + message + '</p>');
+   // Set the modal title and style based on success
+   var modalTitle = isSuccess ? 'Success' : 'Error';
+   var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
+   // Update modal title and header color
+   $('.modal-title').text(modalTitle);
+   $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
+   // Show the modal
+   $('#dynamicContentModal').modal('show');
+}
+
 $(document).ready(function() {
-  $('#subjectForm').on('submit', function(e) {
+  $('#teachingactivityForm').on('submit', function(e) {
     e.preventDefault();
 
-    var subjectData = {
+    var teachingactivityData = {
       name: $('#name').val(),
         duration: $('#duration').val(),
         label: $('#label').val(),
@@ -61,14 +98,14 @@ $(document).ready(function() {
       type: 'POST',
       url: 'http://localhost:5000/addTeachingActivity',
       contentType: 'application/json',
-      data: JSON.stringify(subjectData),
+      data: JSON.stringify(teachingactivityData),
       success: function(response) {
         console.log(response);
-        
+        openDynamicContentModal('Operation was successful!', true);
       },
       error: function(xhr, status, error) {
         console.error(error);
-        // Handle error (display error message to the user)
+        openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
       }
     });
   });
