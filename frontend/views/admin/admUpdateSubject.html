@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rozvrchol</title>
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Update Subject</h2>
+        <form id="subjectForm">
+          <div class="form-group">
+            <label for="oldshortcut">Shortcut:</label>
+            <input style="width: 300px;" type="text" class="form-control" id="oldshortcut" required>
+          </div>
+          <div class="form-group">
+            <label for="shortcut">New shortcut:</label>
+            <input style="width: 300px;" type="text" class="form-control" id="shortcut" >
+          </div>
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input style="width: 300px;" type="text" class="form-control" id="name" >
+          </div> 
+          <div class="form-group">
+            <label for="annotation">Annotation:</label>
+            <input style="width: 300px;" type="text" class="form-control" id="annotation">
+          </div>
+          <div class="form-group">
+            <label for="credits">Credits:</label>
+            <input style="width: 300px;" type="number" class="form-control" id="credits" >
+          </div>
+          <div class="form-group">
+            <label for="id_guarantor">Garant:</label>
+            <input style="width: 300px;" type="text" class="form-control" id="id_guarantor" >
+          </div>
+          <button type="submit" class="btn btn-primary">Update Subject</button>
+          
+        </form>
+        <div style="padding-top: 20px">
+          <form id="guest"action="adminview.html">
+            <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
+          </form>
+        </div>
+        
+      </div>
+    <button type="submit" class="btn btn-primary">Update subject</button>
+    
+  </form>
+  <div style="padding-top: 20px">
+    <form id="guest"action="adminview.html">
+      <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
+    </form>
+  </div>
+  
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#subjectForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var subjectData = {
+        oldshortcut: $('#oldshortcut').val(),
+        shortcut: $('#shortcut').val(),
+        name: $('#name').val(),
+        annotation: $('#annotation').val(),
+        credits: $('#credits').val(),
+        id_guarantor: $('#id_guarantor').val()
+    };
+
+    $.ajax({
+      type: 'PUT',
+      url: 'http://localhost:5000/updateSubject/'+subjectData.oldshortcut,
+      contentType: 'application/json',
+      data: JSON.stringify(subjectData),
+      success: function(response) {
+        console.log(response);
+      },
+      error: function(xhr, status, error) {
+        console.error(error);
+        // Handle error (display error message to the subject)
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
