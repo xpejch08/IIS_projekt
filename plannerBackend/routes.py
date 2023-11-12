@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule
+from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule, Course_Instructors, \
+    Teacher_Personal_Preferences
 from db import User, db
 from sqlalchemy.orm.exc import NoResultFound
+from datetime import datetime
 
 my_routes = Blueprint('my_routes', __name__)
 
@@ -258,6 +260,7 @@ def update_user_admin(name):
     else:
         return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
 
+
 @my_routes.route('/deleteUserAdmin/<string:name>', methods=['DELETE'])
 def delete_user_admin(name):
     try:
@@ -440,3 +443,135 @@ def delete_teaching_activity(label):
         return jsonify({'error': str(e)}), 500
 
 
+@my_routes.route('/addTeacherToSubject', methods=['POST'])
+def add_teacher_to_subject():
+    data = request.get_json()
+    teacher_username = data['username']
+    subject_shortcut = data['shortcut']
+
+    # Check if the teacher exists
+    teacher = User.query.filter_by(name=teacher_username).first()
+    if not teacher:
+        return jsonify({'error': 'Teacher not found'}), 404
+
+    # Check if the subject exists
+    subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
+    if not subject:
+        return jsonify({'error': 'Subject not found'}), 404
+
+    # Create a new CourseInstructors object
+    new_course_instructor = Course_Instructors(
+        teacher_name=teacher_username,
+        shortcut=subject_shortcut
+    )
+
+    try:
+        # Add the new object to the database
+        db.session.add(new_course_instructor)
+        db.session.commit()
+        return jsonify({'success': 'Teacher added to subject successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/deleteTeacherFromSubject', methods=['DELETE'])
+def delete_teacher_from_subject():
+    data = request.get_json()
+    teacher_username = data.get('username')
+    subject_shortcut = data.get('shortcut')
+
+    # Check if the course instructor entry exists
+    course_instructor = Course_Instructors.query.filter_by(
+        teacher_name=teacher_username,
+        shortcut=subject_shortcut
+    ).first()
+    if not course_instructor:
+        return jsonify({'error': 'Teacher not found for the specified subject'}), 404
+
+    try:
+        # Delete the entry from the database
+        db.session.delete(course_instructor)
+        db.session.commit()
+        return jsonify({'success': 'Teacher removed from subject successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/definePreferences', methods=['POST'])
+def define_preferences():
+    data = request.get_json()
+    teacher_name = data.get('teacher_name')
+    preferences = data.get('satisfactory_days_and_times')
+
+    # Check if preferences already exist for the teacher
+    existing_preferences = Teacher_Personal_Preferences.query.filter_by(teacher_name=teacher_name).first()
+
+    if existing_preferences:
+        # Update existing preferences
+        existing_preferences.satisfactory_days_and_times = preferences
+    else:
+        # Create new preferences
+        new_preferences = Teacher_Personal_Preferences(teacher_name=teacher_name, satisfactory_days_and_times=preferences)
+        db.session.add(new_preferences)
+
+    try:
+        db.session.commit()
+        return jsonify({'success': 'Preferences updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/addActivityInSchedule', methods=['POST'])
+def add_activity_in_schedule():
+    data = request.get_json()
+    teaching_activity_label = data['teaching_activity_label']
+    room_title = data['room_title']
+    instructor_name = data['instructor_name']
+    day_and_time_str = data['day_and_time']  # assuming this is passed as a string
+
+    # Convert the day_and_time string to a datetime object
+    try:
+        day_and_time = datetime.strptime(day_and_time_str, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format'}), 400
+
+    # Find the teaching activity by label
+    teaching_activity = TeachingActivity.query.filter_by(label=teaching_activity_label).first()
+    if not teaching_activity:
+        return jsonify({'error': 'Teaching activity not found'}), 404
+
+    # Find the room by title
+    room = Room.query.filter_by(title=room_title).first()
+    if not room:
+        return jsonify({'error': 'Room not found'}), 404
+
+    # Create new schedule entry
+    new_schedule_entry = Schedule(
+        teaching_activity_id=teaching_activity.id,
+        room_id=room.id,
+        instructor_name=instructor_name,
+        day_and_time=day_and_time,
+        # Set check_room_collisions and check_schedule_requests if applicable
+    )
+
+    try:
+        db.session.add(new_schedule_entry)
+        db.session.commit()
+        return jsonify({'success': 'Activity added to schedule successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getSchedule', methods=['GET'])
+def get_schedule():
+    # Query all schedule entries
+    schedule_entries = Schedule.query.all()
+
+    # Convert the schedule entries to a JSON-friendly format
+    schedule_list = [entry.as_dict() for entry in schedule_entries]
+
+    return jsonify(schedule_list), 200

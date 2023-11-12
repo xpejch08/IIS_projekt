@@ -136,6 +136,86 @@ class TestAppRoutes(unittest.TestCase):
         # Optionally, verify that the teaching activity no longer exists in the database
         # This would require a GET request or similar to check for its existence
 
+    def test_add_teacher_to_subject(self):
+        # Ensure a teacher and a subject exist
+        # You might want to add a teacher and a subject here if they do not exist already
+        # For demonstration, let's assume the teacher and subject already exist
+
+        # Data for adding a teacher to a subject
+        data = {
+            'username': 'teacher',  # Replace with an existing teacher's username
+            'shortcut': 'matala'  # Replace with an existing subject's shortcut
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(f'{self.BASE_URL}/addTeacherToSubject', json=data, headers=headers)
+
+        self.assertEqual(response.status_code, 201)
+
+        # Optionally, you can verify if the teacher was added to the subject
+        # This would require a subsequent GET request or similar to check the updated state
+
+    def test_delete_teacher_from_subject(self):
+        # Ensure a teacher-subject assignment exists
+        # You might want to add a teacher to a subject here if they do not exist already
+        # For demonstration, let's assume the teacher-subject assignment already exists
+
+        # Data for removing a teacher from a subject
+        data = {
+            'username': 'teacher',  # Replace with an existing teacher's username
+            'shortcut': 'matala'  # Replace with an existing subject's shortcut
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.delete(f'{self.BASE_URL}/deleteTeacherFromSubject', json=data, headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, you can verify if the teacher was removed from the subject
+        # This would require a subsequent GET request or similar to check the updated state
+
+    def test_define_preferences(self):
+        # Data for defining a teacher's personal preferences
+        data = {
+            'teacher_name': 'teacher',  # Replace with an existing teacher's username
+            'satisfactory_days_and_times': 'Monday and Wednesday, 9am - 11am'  # Example preferences
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(f'{self.BASE_URL}/definePreferences', json=data, headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, you can verify if the preferences were correctly added or updated
+        # This would require a subsequent GET request or similar to check the updated state
+
+    def test_add_activity_in_schedule(self):
+        # Data for adding an activity to the schedule
+        data = {
+            'teaching_activity_label': 'Intro to Programming',  # Replace with an existing activity's label
+            'room_title': 'Room A',  # Replace with an existing room's title
+            'instructor_name': 'teacher',  # Replace with an existing instructor's name
+            'day_and_time': '2023-01-01 09:00:00'  # Example date and time
+        }
+
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(f'{self.BASE_URL}/addActivityInSchedule', json=data, headers=headers)
+
+        self.assertEqual(response.status_code, 201)
+
+        # Optionally, you can verify if the activity was correctly added to the schedule
+        # This would require a subsequent GET request or similar to check the updated state
+
+    def test_get_schedule(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getSchedule')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
 
 if __name__ == '__main__':
     unittest.main()

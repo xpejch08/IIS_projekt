@@ -104,5 +104,33 @@ class Schedule(db.Model):
     room = db.relationship('Room', back_populates='schedules')
     teaching_activity = db.relationship('TeachingActivity', back_populates='schedules')
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'teaching_activity_id': self.teaching_activity_id,
+            'room_id': self.room_id,
+            'instructor_name': self.instructor_name,
+            'day_and_time': self.day_and_time.strftime('%Y-%m-%d %H:%M:%S')
+        }
 
+
+class Course_Instructors(db.Model):
+    __tablename__ = 'course_instructors'
+
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'), primary_key=True)
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE'), primary_key=True)
+
+class Teacher_Personal_Preferences(db.Model):
+    __tablename__ = 'teacher_personal_preferences'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'), primary_key=True)
+    satisfactory_days_and_times = db.Column(db.Text)
+
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'teacher_name': self.teacher_name,
+            'satisfactory_days_and_times': self.satisfactory_days_and_times
+        }
 
