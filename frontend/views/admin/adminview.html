@@ -1,105 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rozvrchol</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin: 20px;
+    }
+  
+    h1 {
+      font-size: 2em;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+  
+    .btn {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+  
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+    }
+  
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+  
+    .action-group {
+      margin: 20px auto;
+      width: 100%;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      background-color: #fff;
+      text-align: center;
+    }
+  
+    p {
+      color: #007bff;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+  </style>
 </head>
-    <body>
-        <p style="font-family: monospace; font-size: xx-large;padding: 10px;"><b>ADMIN MENU</b></p>
-        <div style="padding-bottom: 10px; padding-left: 10px;">
-            <form action="../../index.html">
-            <input type="submit" class="btn btn-secondary" value="Log out" />
-            </form>
-        </div>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-8">
+        <h1>ADMIN MENU</h1>
+      </div>
+      <div class="col-4 text-right">
+        <form action="../../index.html">
+          <input type="submit" class="btn btn-secondary" value="Log out" />
+        </form>
+      </div>
+    </div>
 
-            <div style="padding-bottom: 10px; padding-left: 10px;"> 
-                <p>User actions:</p>
-            <form id="guest"action="admUpdateUser.html">
-              <input type="submit" class="btn btn-primary" value="Update user" />
-            </form>
-          </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                
-                <form id="guest"action="admCreateUser.html">
-                <input type="submit" class="btn btn-primary" value="Create user" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admDeleteUser.html">
-                <input type="submit" class="btn btn-primary" value="Delete user" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <p>Subject actions:</p>
-                <form id="guest"action="admAddSubject.html">
-                <input type="submit" class="btn btn-primary" value="Create subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admDeleteSubject.html">
-                <input type="submit" class="btn btn-primary" value="Delete subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admUpdateSubject.html">
-                <input type="submit" class="btn btn-primary" value="Update subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <p>Room actions:</p>
-                <form id="guest"action="admCreateRoom.html">
-                <input type="submit" class="btn btn-primary" value="Create room" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admDeleteRoom.html">
-                <input type="submit" class="btn btn-primary" value="Delete room" />
-                </form>
-            </div>
-            
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <p>Teaching activity actions:</p>
-                <form id="guest"action="admAddTeachingActivity.html">
-                <input type="submit" class="btn btn-primary" value="Create teaching activity" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admDeleteTeachingActivity.html">
-                <input type="submit" class="btn btn-primary" value="Delete teaching activity" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <p>Teacher actions:</p>
-                <form id="guest"action="admAddTeacherToSubject.html">
-                <input type="submit" class="btn btn-primary" value="Add teacher to subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest" action="admDeleteTeacherFromSubject.html">
-                <input type="submit" class="btn btn-primary" value="Delete teacher from subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admSetGuarantorOfSubject.html">
-                <input type="submit" class="btn btn-primary" value="Set guarant to a subject" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <form id="guest"action="admDefinePreferences.html">
-                <input type="submit" class="btn btn-primary" value="Define preferences" />
-                </form>
-            </div>
-            <div style="padding-bottom: 10px; padding-left: 10px;">
-                <p>Activities actions:</p>
-                <form id="guest"action="admAddActivityInSchedule.html">
-                <input type="submit" class="btn btn-primary" value="Add activity to a schedule" />
-                </form>
-            </div>
-            
-    </body>
+    <div class="action-group">
+      <p>Users</p>
+      <form id="guest" action="admUpdateUser.html">
+        <input type="submit" class="btn btn-primary" value="Update user" />
+      </form>
+      <form id="guest" action="admCreateUser.html">
+        <input type="submit" class="btn btn-primary" value="Create user" />
+      </form>
+      <form id="guest" action="admDeleteUser.html">
+        <input type="submit" class="btn btn-primary" value="Delete user" />
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Subjects</p>
+      <form id="guest" action="admAddSubject.html">
+        <input type="submit" class="btn btn-primary" value="Create subject" />
+      </form>
+      <form id="guest" action="admDeleteSubject.html">
+        <input type="submit" class="btn btn-primary" value="Delete subject" />
+      </form>
+      <form id="guest" action="admUpdateSubject.html">
+        <input type="submit" class="btn btn-primary" value="Update subject" />
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Rooms</p>
+      <form id="guest" action="admCreateRoom.html">
+        <input type="submit" class="btn btn-primary" value="Create room" />
+      </form>
+      <form id="guest" action="admDeleteRoom.html">
+        <input type="submit" class="btn btn-primary" value="Delete room" />
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Teaching activities</p>
+      <form id="guest" action="admAddTeachingActivity.html">
+        <input type="submit" class="btn btn-primary" value="Create teaching activity" />
+      </form>
+      <form id="guest" action="admDeleteTeachingActivity.html">
+        <input type="submit" class="btn btn-primary" value="Delete teaching activity" />
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Teachers</p>
+      <form id="guest" action="admAddTeacherToSubject.html">
+        <input type="submit" class="btn btn-primary" value="Add teacher to subject" />
+      </form>
+      <form id="guest" action="admDeleteTeacherFromSubject.html">
+        <input type="submit" class="btn btn-primary" value="Delete teacher from subject" />
+      </form>
+      <form id="guest" action="admSetGuarantorOfSubject.html">
+        <input type="submit" class="btn btn-primary" value="Set guarantor to a subject" />
+      </form>
+      <form id="guest" action="admDefinePreferences.html">
+        <input type="submit" class="btn btn-primary" value="Define preferences" />
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Activities</p>
+      <form id="guest" action="admAddActivityInSchedule.html">
+        <input type="submit" class="btn btn-primary" value="Add activity to a schedule" />
+      </form>
+    </div>
+  </div>
+
+</body>
 </html>
 
 <!-- TODO: POPUP kdyz uspech admin akce -->
