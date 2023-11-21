@@ -26,15 +26,20 @@
       </div>
     <div class="form-group">
       <label for="day">Day:</label>
-      <input style="width: 300px;" type="number" class="form-control" id="day" required>
+      <input style="width: 300px;" type="number" class="form-control" id="day" min="1" max="5" required>
     </div>
     <div class="form-group">
         <label for="hour">Hour:</label>
-        <input style="width: 300px;" type="number" class="form-control" id="hour" required>
+        <input style="width: 300px;" type="number" class="form-control" id="hour" min="0" max="9" required>
     </div>
     <div class="form-group">
         <label for="repetition">Repetition:</label>
-        <input style="width: 300px;" type="text" class="form-control" id="repetition" required>
+        <select class="form-control" id="repetition" style="width: 300px;" required>
+            <option value="every week">Every week</option>
+            <option value="odd weeks">Odd weeks</option>
+            <option value="even weeks">Even weeks</option>
+            <option value="one time">One time</option>
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Add to schedule</button>
     
