@@ -530,13 +530,10 @@ def add_activity_in_schedule():
     teaching_activity_label = data['teaching_activity_label']
     room_title = data['room_title']
     instructor_name = data['instructor_name']
-    day_and_time_str = data['day_and_time']  # assuming this is passed as a string
+    day = data['day']  # assuming this is passed as a string
+    hour = data['hour']  # assuming this is passed as a string
+    repetition = data['repetition']
 
-    # Convert the day_and_time string to a datetime object
-    try:
-        day_and_time = datetime.strptime(day_and_time_str, '%Y-%m-%d %H:%M:%S')
-    except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
 
     # Find the teaching activity by label
     teaching_activity = TeachingActivity.query.filter_by(label=teaching_activity_label).first()
@@ -553,7 +550,9 @@ def add_activity_in_schedule():
         teaching_activity_id=teaching_activity.id,
         room_id=room.id,
         instructor_name=instructor_name,
-        day_and_time=day_and_time,
+        day=day,
+        hour=hour,
+        repetition=repetition,
         # Set check_room_collisions and check_schedule_requests if applicable
     )
 
@@ -575,3 +574,118 @@ def get_schedule():
     schedule_list = [entry.as_dict() for entry in schedule_entries]
 
     return jsonify(schedule_list), 200
+
+
+@my_routes.route('/getUsers', methods=['GET'])
+def get_users():
+    try:
+        # Query all users
+        users = User.query.all()
+
+        # Convert the list of user objects to a list of dictionaries
+        users_list = [user.as_dict() for user in users]
+
+        # Return the list in JSON format
+        return jsonify(users_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getSubjects', methods=['GET'])
+def get_subjects():
+    try:
+        # Query all subjects from the database
+        subjects = Subject.query.all()
+
+        # Convert the list of Subject objects to a list of dictionaries
+        subjects_list = [subject.as_dict() for subject in subjects]
+
+        # Return the list in JSON format
+        return jsonify(subjects_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getRooms', methods=['GET'])
+def get_rooms():
+    try:
+        # Query all rooms from the database
+        rooms = Room.query.all()
+
+        # Convert the list of Room objects to a list of dictionaries
+        rooms_list = [room.as_dict() for room in rooms]
+
+        # Return the list in JSON format
+        return jsonify(rooms_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getTeachingActivities', methods=['GET'])
+def get_teaching_activities():
+    try:
+        # Query all teaching activities from the database
+        teaching_activities = TeachingActivity.query.all()
+
+        # Convert the list of TeachingActivity objects to a list of dictionaries
+        teaching_activities_list = [activity.as_dict() for activity in teaching_activities]
+
+        # Return the list in JSON format
+        return jsonify(teaching_activities_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+##getCourseInstructors
+
+
+@my_routes.route('/getCourseInstructors', methods=['GET'])
+def get_course_instructors():
+    try:
+        # Query all course instructors from the database
+        course_instructors = Course_Instructors.query.all()
+
+        # Convert the list of Course_Instructors objects to a list of dictionaries
+        instructors_list = [{'teacher_name': instructor.teacher_name, 'shortcut': instructor.shortcut} for instructor in course_instructors]
+
+        # Return the list in JSON format
+        return jsonify(instructors_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+##getSubjectGuardians
+@my_routes.route('/getSubjectGuardians', methods=['GET'])
+def get_subject_guardians():
+    try:
+        # Query all subject guardians from the database
+        subject_guardians = SubjectGuardians.query.all()
+
+        # Convert the list of SubjectGuardians objects to a list of dictionaries
+        guardians_list = [{'shortcut': guardian.shortcut, 'teacher_name': guardian.teacher_name} for guardian in subject_guardians]
+
+        # Return the list in JSON format
+        return jsonify(guardians_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getTeacherPersonalPreferences', methods=['GET'])
+def get_teacher_personal_preferences():
+    try:
+        # Query all teacher personal preferences from the database
+        teacher_preferences = Teacher_Personal_Preferences.query.all()
+
+        # Convert the list of Teacher_Personal_Preferences objects to a list of dictionaries
+        preferences_list = [{'teacher_name': pref.teacher_name, 'satisfactory_days_and_times': pref.satisfactory_days_and_times} for pref in teacher_preferences]
+
+        # Return the list in JSON format
+        return jsonify(preferences_list), 200
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500

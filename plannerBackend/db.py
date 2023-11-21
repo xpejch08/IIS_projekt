@@ -98,7 +98,9 @@ class Schedule(db.Model):
     teaching_activity_id = db.Column(db.BigInteger, db.ForeignKey('teaching_activities.id'), nullable=False)
     room_id = db.Column(db.BigInteger, db.ForeignKey('rooms.id'), nullable=False)
     instructor_name = db.Column(db.String(255), db.ForeignKey('users.name'), nullable=False)
-    day_and_time = db.Column(db.DateTime, nullable=False)
+    day = db.Column(db.Integer, nullable=False)  # Assuming 'day' ranges from 0 to 6
+    hour = db.Column(db.Integer, nullable=False)  # Assuming 'hour' ranges from 0 to 13
+    repetition = db.Column(db.String(255))
     check_room_collisions = db.Column(db.Boolean, default=False)
     check_schedule_requests = db.Column(db.Boolean, default=False)
     room = db.relationship('Room', back_populates='schedules')
@@ -110,7 +112,9 @@ class Schedule(db.Model):
             'teaching_activity_id': self.teaching_activity_id,
             'room_id': self.room_id,
             'instructor_name': self.instructor_name,
-            'day_and_time': self.day_and_time.strftime('%Y-%m-%d %H:%M:%S')
+            'day': self.day,
+            'hour': self.hour,
+            'repetition': self.repetition,
         }
 
 

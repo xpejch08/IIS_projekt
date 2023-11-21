@@ -192,10 +192,12 @@ class TestAppRoutes(unittest.TestCase):
     def test_add_activity_in_schedule(self):
         # Data for adding an activity to the schedule
         data = {
-            'teaching_activity_label': 'Intro to Programming',  # Replace with an existing activity's label
+            'teaching_activity_label': 'Lab 1',  # Replace with an existing activity's label
             'room_title': 'Room A',  # Replace with an existing room's title
             'instructor_name': 'teacher',  # Replace with an existing instructor's name
-            'day_and_time': '2023-01-01 09:00:00'  # Example date and time
+            'day': '1',  # Example date and time
+            'hour': '9',  # Example date and time
+            'repetition': 'weekly'  # Example repetition
         }
 
         headers = {'Content-Type': 'application/json'}
@@ -215,6 +217,78 @@ class TestAppRoutes(unittest.TestCase):
         # Optionally, check the structure of the response data
         schedule_data = response.json()
         self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_users(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getUsers')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_subjects(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getSubjects')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_rooms(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getRooms')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_teaching_activities(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getTeachingActivities')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_course_instructors(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getCourseInstructors')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_subject_guardians(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getSubjectGuardians')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+    def test_get_teachers_personal_preferences(self):
+        # Make a GET request to the getSchedule route
+        response = requests.get(f'{self.BASE_URL}/getTeacherPersonalPreferences')
+
+        self.assertEqual(response.status_code, 200)
+
+        # Optionally, check the structure of the response data
+        schedule_data = response.json()
+        self.assertIsInstance(schedule_data, list)  # Ensure it's a list
+
+
 
 
 if __name__ == '__main__':

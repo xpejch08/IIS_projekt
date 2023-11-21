@@ -73,7 +73,9 @@ CREATE TABLE schedule (
     teaching_activity_id BIGINT UNSIGNED,
     room_id BIGINT UNSIGNED,
     instructor_name VARCHAR(255),
-    day_and_time DATETIME,
+    day INT UNSIGNED check ( day between 0 and 6),
+    hour INT UNSIGNED check ( hour between 0 and 13),
+    repetition VARCHAR(255),
     check_room_collisions BOOLEAN,
     check_schedule_requests BOOLEAN,
     PRIMARY KEY (id),
@@ -142,10 +144,10 @@ INSERT INTO teacher_personal_preferences (teacher_name, satisfactory_days_and_ti
 -- Insert test data into the schedule table
 -- Note: The values for id_teaching_activity, id_room, id_instructor need to be adjusted to new table structure
 -- Assuming these values still refer to the auto-generated IDs for teaching_activities, rooms, and users tables
-INSERT INTO schedule (teaching_activity_id, room_id, instructor_name, day_and_time, check_room_collisions, check_schedule_requests) VALUES
-    (1, 1, 'teacher', '2023-10-16 09:00:00', false, true),
-    (2, 2, 'teacher', '2023-10-17 13:00:00', false, true),
-    (3, 3, 'teacher', '2023-10-18 10:00:00', false, true);
+INSERT INTO schedule (teaching_activity_id, room_id, instructor_name, day, hour, repetition, check_room_collisions, check_schedule_requests) VALUES
+    (1, 1, 'teacher', '1', '2', 'weekly',false, true),
+    (2, 2, 'teacher', '2','3', 'daily',false, true),
+    (3, 3, 'teacher', '3', '8', 'every odd week',false, true);
 
 -- Insert test data into the personal_student_schedule table
 -- The value for id_user must correspond to the user's name
