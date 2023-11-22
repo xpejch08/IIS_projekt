@@ -94,8 +94,9 @@ $(document).ready(function() {
   });
   // Update teachers list based on the selected subject
   $('#addTeacherToSubject').on('change', function(e) {
-    e.preventDefault();
-    
+    if ($('#shortcut').val() == "--") {
+      return;
+    }
     $.ajax({
       type: 'GET',
       url: 'http://localhost:5000/getTeachersOfSubject/' + $('#shortcut').val(),
