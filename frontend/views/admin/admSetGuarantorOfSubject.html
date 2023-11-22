@@ -13,14 +13,20 @@
   <h2>Set guarantor to a subject</h2>
   <form id="userForm">
     <div class="form-group">
-      <label for="guarantor_name">Name of the future guarantor:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="guarantor_name" required>
+      <label for="name">New guarantor name:</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="name" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
     <div class="form-group">
-      <label for="shortcut">Subject's shortcut:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="shortcut" required>
+      <label for="shortcut">Subject's shortcut::</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="shortcut" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
-    <button type="submit" class="btn btn-primary">Update user</button>
+    <button type="submit" class="btn btn-primary">Set new guarantor</button>
     
   </form>
   <div style="padding-top: 20px">
@@ -42,7 +48,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -68,11 +74,42 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:5000/getGuardians',
+    success: function(response) {
+      // Loop through the subjects and add options to the dropdown
+      for (var i = 0; i < response.length; i++) {
+        $('#name').append('<option value="' + response[i].name + '">' + response[i].name + '</option>');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+      openDynamicContentModal('Failed to fetch guarantors. Please try again. ERROR: ' + error, false);
+    }
+  });
+
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:5000/getSubjects',
+    success: function(response) {
+      // Loop through the subjects and add options to the dropdown
+      for (var i = 0; i < response.length; i++) {
+        $('#shortcut').append('<option value="' + response[i].shortcut + '">' + response[i].shortcut + '</option>');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+      openDynamicContentModal('Failed to fetch subjects. Please try again. ERROR: ' + error, false);
+    }
+  });
+
   $('#userForm').on('submit', function(e) {
     e.preventDefault();
 
     var userData = {
-        guarantor_name: $('#guarantor_name').val(),
+        guarantor_name: $('#name').val(),
         shortcut: $('#shortcut').val() 
     };
 

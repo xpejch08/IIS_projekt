@@ -13,8 +13,11 @@
   <h2>Update user</h2>
   <form id="userForm">
     <div class="form-group">
-      <label for="oldname">Name:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="oldname" required>
+      <label for="oldname">Old name:</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="oldname" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
     <div class="form-group">
       <label for="name">New name:</label>
@@ -57,7 +60,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -83,6 +86,23 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  // Fetch the subjects and populate the dropdown list
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:5000/getUsers',
+    success: function(response) {
+      // Loop through the subjects and add options to the dropdown
+      for (var i = 0; i < response.length; i++) {
+        $('#oldname').append('<option value="' + response[i].name + '">' + response[i].name + '</option>');
+      } 
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+      openDynamicContentModal('Failed to fetch users. Please try again. ERROR: ' + error, false);
+    }
+  });
+
   $('#userForm').on('submit', function(e) {
     e.preventDefault();
 
@@ -101,12 +121,15 @@ $(document).ready(function() {
       success: function(response) {
         console.log(response);
         openDynamicContentModal('Operation was successful!', true);
+        
       },
       error: function(xhr, status, error) {
         console.error(error);
         openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
       }
+      
     });
+
   });
 });
 </script>

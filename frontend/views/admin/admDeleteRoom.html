@@ -13,8 +13,11 @@
   <h2>Delete room</h2>
   <form id="roomForm">
     <div class="form-group">
-      <label for="title">Title:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="title" required>
+      <label for="title">Room title:</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="title" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
       
     <button type="submit" class="btn btn-primary">Delete room</button>
@@ -39,7 +42,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -65,6 +68,22 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  $.ajax({
+  type: 'GET',
+  url: 'http://localhost:5000/getRooms',
+  success: function(response) {
+    // Loop through the subjects and add options to the dropdown
+    for (var i = 0; i < response.length; i++) {
+      $('#title').append('<option value="' + response[i].title + '">' + response[i].title + '</option>');
+    } 
+  },
+  error: function(xhr, status, error) {
+    console.error(error);
+    openDynamicContentModal('Failed to fetch rooms. Please try again. ERROR: ' + error, false);
+  }
+  });
+
   $('#roomForm').on('submit', function(e) {
     e.preventDefault();
 

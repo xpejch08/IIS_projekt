@@ -14,7 +14,7 @@
   <form id="teachingactivityForm">
     <div class="form-group">
       <label for="duration">Duration:</label>
-      <input style="width: 300px;" type="number" class="form-control" id="duration" required>
+      <input style="width: 300px;" type="number" min="1" max="9" class="form-control" id="duration" required>
     </div>
     <div class="form-group">
       <label for="label">Label:</label>
@@ -29,10 +29,13 @@
             <option value="one time">One time</option>
         </select>
       </div>
-    <div class="form-group">
-      <label for="subject_shortcut">Subject shortcut:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="subject_shortcut" required>
-    </div>
+      <div class="form-group">
+        <label for="subject_shortcut">Subject shortcut:</label>
+        <!-- Updated the input to a dropdown/select list -->
+        <select style="width: 300px;" class="form-control" id="subject_shortcut" required>
+          <!-- Options will be dynamically added here -->
+        </select>
+      </div>
     <button type="submit" class="btn btn-primary">Add teaching activity</button>
     
   </form>
@@ -55,7 +58,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -82,6 +85,22 @@ function openDynamicContentModal(message, isSuccess) {
 }
 
 $(document).ready(function() {
+
+  $.ajax({
+  type: 'GET',
+  url: 'http://localhost:5000/getSubjects',
+  success: function(response) {
+    // Loop through the subjects and add options to the dropdown
+    for (var i = 0; i < response.length; i++) {
+      $('#subject_shortcut').append('<option value="' + response[i].shortcut + '">' + response[i].shortcut + '</option>');
+    } 
+  },
+  error: function(xhr, status, error) {
+    console.error(error);
+    openDynamicContentModal('Failed to fetch users. Please try again. ERROR: ' + error, false);
+  }
+  });
+
   $('#teachingactivityForm').on('submit', function(e) {
     e.preventDefault();
 

@@ -13,9 +13,14 @@
   <h2>Define preferencies</h2>
   <form id="definePreferencesForm">
     <div class="form-group">
-      <label for="teacher_name">Teacher name:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="teacher_name" required>
+      <label for="name">Teacher name:</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="name" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
+      <!-- TOTO nahradit do teachersview-->
+       <!-- <input type="text" id="teacher_name" readonly> -->
     <div class="form-group">
       <label for="preferences">Preffered days:</label>
       <input style="width: 300px;" type="text" class="form-control" id="preferences" required>
@@ -42,7 +47,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -68,11 +73,27 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:5000/getTeachersAndGuarantors',
+    success: function(response) {
+      // Loop through the subjects and add options to the dropdown
+      for (var i = 0; i < response.length; i++) {
+        $('#name').append('<option value="' + response[i].name + '">' + response[i].name + '</option>');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error(error);
+      openDynamicContentModal('Failed to fetch teachers. Please try again. ERROR: ' + error, false);
+    }
+  });
+
   $('#definePreferencesForm').on('submit', function(e) {
     e.preventDefault();
 
     var preferencesData = {
-        teacher_name: $('#teacher_name').val(),
+        teacher_name: $('#name').val(),
         satisfactory_days_and_times: $('#preferences').val()
     };
 

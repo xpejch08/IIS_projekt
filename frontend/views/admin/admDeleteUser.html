@@ -14,7 +14,10 @@
   <form id="userForm">
     <div class="form-group">
       <label for="name">Name:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="name" required>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="name" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
     
     <button type="submit" class="btn btn-primary">Delete user</button>
@@ -39,7 +42,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -65,6 +68,22 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  $.ajax({
+  type: 'GET',
+  url: 'http://localhost:5000/getUsers',
+  success: function(response) {
+    // Loop through the subjects and add options to the dropdown
+    for (var i = 0; i < response.length; i++) {
+      $('#name').append('<option value="' + response[i].name + '">' + response[i].name + '</option>');
+    } 
+  },
+  error: function(xhr, status, error) {
+    console.error(error);
+    openDynamicContentModal('Failed to fetch users. Please try again. ERROR: ' + error, false);
+  }
+});
+
   $('#userForm').on('submit', function(e) {
     e.preventDefault();
 

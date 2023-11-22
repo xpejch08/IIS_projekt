@@ -12,8 +12,11 @@
   <h2>Delete teaching activity</h2>
   <form id="teachingactivityForm">
     <div class="form-group">
-      <label for="label">Label:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="label" required>
+      <label for="label">Teaching activity label:</label>
+      <!-- Updated the input to a dropdown/select list -->
+      <select style="width: 300px;" class="form-control" id="label" required>
+        <!-- Options will be dynamically added here -->
+      </select>
     </div>
       
     <button type="submit" class="btn btn-primary">Delete teaching activity</button>
@@ -38,7 +41,7 @@
                 <!-- Content will be dynamically updated here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -64,6 +67,22 @@ function openDynamicContentModal(message, isSuccess) {
    $('#dynamicContentModal').modal('show');
 }
 $(document).ready(function() {
+
+  $.ajax({
+  type: 'GET',
+  url: 'http://localhost:5000/getTeachingActivities',
+  success: function(response) {
+    // Loop through the subjects and add options to the dropdown
+    for (var i = 0; i < response.length; i++) {
+      $('#label').append('<option value="' + response[i].label + '">' + response[i].label + '</option>');
+    } 
+  },
+  error: function(xhr, status, error) {
+    console.error(error);
+    openDynamicContentModal('Failed to fetch teaching activities. Please try again. ERROR: ' + error, false);
+  }
+  });
+
   $('#teachingactivityForm').on('submit', function(e) {
     e.preventDefault();
 
