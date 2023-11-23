@@ -335,6 +335,10 @@ class TestAppRoutes(unittest.TestCase):
         self.assertEqual(get_login_response.status_code, 200)
         self.assertEqual(get_login_response.json()['name'], 'admin')
 
+    def test_logout(self):
+        logout_response = requests.get(f'{self.BASE_URL}/logout')
+        self.assertEqual(logout_response.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

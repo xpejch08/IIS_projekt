@@ -66,30 +66,16 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-
-function openDynamicContentModal(message, isSuccess) {
-   // Set the dynamic content
-   $('#modalContent').html('<p>' + message + '</p>');
-   // Set the modal title and style based on success
-   var modalTitle = isSuccess ? 'Success' : 'Error';
-   var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
-   // Update modal title and header color
-   $('.modal-title').text(modalTitle);
-   $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
-   // Show the modal
-   $('#dynamicContentModal').modal('show');
-}
 $(document).ready(function() {
   $('#subjectForm').on('submit', function(e) {
     e.preventDefault();
 
     var subjectData = {
       name: $('#name').val(),
-        shortcut: $('#shortcut').val(),
-        annotation: $('#annotation').val(),
-        credits: $('#credits').val(),
-        id_guarantor: $('#id_guarantor').val()
-
+      shortcut: $('#shortcut').val(),
+      annotation: $('#annotation').val(),
+      credits: $('#credits').val(),
+      id_guarantor: $('#id_guarantor').val()
     };
 
     $.ajax({
@@ -102,13 +88,20 @@ $(document).ready(function() {
         openDynamicContentModal('Operation was successful!', true);
       },
       error: function(xhr, status, error) {
-        console.error(error);
-        openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
+        console.log("halala");
+        console.error(xhr.statusCode());
+        if (xhr.status === 401) { // Check for 401 Unauthorized response
+          // Redirect to the login page
+          window.location.href = '../../login.html';
+        } //else {
+         // openDynamicContentModal('Operation failed. Please try again. ERROR: ' + error, false);
+        //}
       }
     });
   });
 });
 </script>
+
 
 </body>
 </html>

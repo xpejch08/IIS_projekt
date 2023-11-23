@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session, redirect, url_for
+from flask import Blueprint, request, jsonify, session, redirect, url_for, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule, Course_Instructors, \
     Teacher_Personal_Preferences
@@ -8,6 +8,24 @@ from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 my_routes = Blueprint('my_routes', __name__)
+
+
+from flask import request, jsonify
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            if request.headers.get('Accept') == 'application/json':
+                return jsonify({'redirect': url_for('my_routes.login_view')}), 401
+            return redirect(url_for('my_routes.logout'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@my_routes.route('/login_view', methods=['GET'])
+def login_view():
+    return render_template('login.html')
 
 
 @my_routes.route('/createUser', methods=['POST'])
@@ -50,7 +68,6 @@ def create_user():
         return jsonify({'error': str(e)}), 500
 
 
-
 @my_routes.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -64,7 +81,7 @@ def login():
         session.permanent = True
         session['user_id'] = user.id
         session['user_name'] = user.name
-        return jsonify({'success': True, 'user.role': user.role}), 200  # Redirecting to the path that serves the HTML file
+        return jsonify({'success': True, 'user.role': user.role}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
 
@@ -76,6 +93,14 @@ def get_login():
         return jsonify({'name': session['user_name']})
     else:
         return jsonify({'error': 'No user is currently logged in or session expired'}), 40
+
+
+@my_routes.route('/logout')
+def logout():
+    # Clear the user's session
+    session.clear()
+    # Redirect to the login page, or to the home page, as preferred
+    return jsonify({'error': 'Unauthorized'}), 401
 
 
 @my_routes.route('/getUser/<string:name>', methods=['GET'])
@@ -119,6 +144,7 @@ def update_user(name):
 
 
 @my_routes.route('/addSubject', methods=['POST'])
+@login_required
 def add_subject():
     data = request.get_json()
     guarantor_name = data['guarantor_name']  # Get the guarantor's name
