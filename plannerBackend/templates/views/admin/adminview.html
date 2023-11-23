@@ -5,7 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rozvrchol</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin-top: 50px;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    .col {
+      text-align: center;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      margin-top: 20px;
+    }
+
+    .action-group {
+      margin: 20px auto;
+      max-width: 400px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      background-color: #fff;
+      text-align: center;
+    }
+
+    p {
+      color: #6c757d;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -20,6 +70,7 @@
       </div>
     </div>
 
+  <div class="container">
     <div class="action-group">
       <p>Users</p>
       <form id="guest" action="http://localhost:5000/createUserReroute" method="post">
@@ -42,14 +93,14 @@
         <input type="submit" class="btn btn-primary" value="Update a subject" />
       </form>
       <form id="guest" action="admDeleteSubject.html">
-        <input type="submit" class="btn btn-primary" value="Delete a subject" />
+        <input type="submit" class="btn btn-primary btn-block" value="Delete a course" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Rooms</p>
       <form id="guest" action="admCreateRoom.html">
-        <input type="submit" class="btn btn-primary" value="Create a room" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create a room" />
       </form>
       <form id="guest" action="admDeleteRoom.html">
         <input type="submit" class="btn btn-primary" value="Delete a room" />
