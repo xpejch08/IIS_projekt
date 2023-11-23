@@ -3,6 +3,7 @@ from db import db
 from routes import my_routes
 from flask_cors import CORS
 from flasgger import Swagger
+from datetime import timedelta
 
 
 def create_app():
@@ -10,6 +11,7 @@ def create_app():
     CORS(app)
     swagger = Swagger(app)
     app.secret_key='noonecangesthisiiskey'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
         "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"

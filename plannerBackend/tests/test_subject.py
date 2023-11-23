@@ -288,7 +288,52 @@ class TestAppRoutes(unittest.TestCase):
         schedule_data = response.json()
         self.assertIsInstance(schedule_data, list)  # Ensure it's a list
 
+    def test_update_subject(self):
+        # # First, add a subject to update
+        add_data = {
+            'shortcut': 'MATH101',
+            'name': 'Mathematics 101',
+            'annotation': 'Basic Math Concepts',
+            'credits': 3,
+            'guarantor_name': 'garant'
+        }
+        # add_headers = {'Content-Type': 'application/json'}
+        # add_response = requests.post(f'{self.BASE_URL}/addSubject', json=add_data, headers=add_headers)
+        #
+        # # Ensure the subject was added successfully before proceeding
+        # self.assertEqual(add_response.status_code, 201)
 
+        # Data to update the subject
+        update_data = {
+            'name': 'halabala',
+            'credits': 3  # Updating credits
+        }
+        update_headers = {'Content-Type': 'application/json'}
+
+        # Test updating the subject
+        update_response = requests.put(f'{self.BASE_URL}/updateSubject/{add_data["shortcut"]}', json=update_data,
+                                       headers=update_headers)
+
+        self.assertEqual(update_response.status_code, 200)
+
+        # Clean up by deleting the subject
+        delete_response = requests.delete(f'{self.BASE_URL}/deleteSubject/{add_data["shortcut"]}')
+        self.assertEqual(delete_response.status_code, 204)
+
+    def test_get_login(self):
+        # Simulate login
+        login_response = requests.post(f'{self.BASE_URL}/login', json={'name': 'admin', 'password': 'admin'})
+        self.assertEqual(login_response.status_code, 200)
+
+        # Get session cookie from login response
+        session_cookie = login_response.cookies
+
+        # Make a GET request to getLogin route using the session cookie
+        get_login_response = requests.get(f'{self.BASE_URL}/getLogin', cookies=session_cookie)
+
+        # Check if the getLogin route returns the correct username
+        self.assertEqual(get_login_response.status_code, 200)
+        self.assertEqual(get_login_response.json()['name'], 'admin')
 
 
 if __name__ == '__main__':

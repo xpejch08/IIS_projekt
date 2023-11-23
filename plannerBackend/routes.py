@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule, Course_Instructors, \
     Teacher_Personal_Preferences
 from db import User, db
+from functools import wraps
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
@@ -49,6 +50,7 @@ def create_user():
         return jsonify({'error': str(e)}), 500
 
 
+
 @my_routes.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -59,6 +61,7 @@ def login():
     user = User.query.filter_by(name=username).first()
 
     if user and check_password_hash(user.password, password):
+        session.permanent = True
         session['user_id'] = user.id
         session['user_name'] = user.name
         return jsonify({'success': True, 'user.role': user.role}), 200  # Redirecting to the path that serves the HTML file
@@ -66,10 +69,19 @@ def login():
         return jsonify({'error': 'Invalid username or password'}), 401
 
 
-@my_routes.route('/getUser/<int:user_id>', methods=['GET'])
-def get_user(user_id):
+@my_routes.route('/getLogin')
+def get_login():
+    # Check if a user is logged in
+    if 'user_name' in session:
+        return jsonify({'name': session['user_name']})
+    else:
+        return jsonify({'error': 'No user is currently logged in or session expired'}), 40
+
+
+@my_routes.route('/getUser/<string:name>', methods=['GET'])
+def get_user(name):
     try:
-        user = User.query.get(user_id)
+        user = User.query.filter_by(name=name).first()
         if user is None:
             return jsonify({'error': 'User not found'}), 404
         return jsonify(user.as_dict()), 200
@@ -109,7 +121,7 @@ def update_user(name):
 @my_routes.route('/addSubject', methods=['POST'])
 def add_subject():
     data = request.get_json()
-    guarantor_name = data['id_guarantor']  # Get the guarantor's name
+    guarantor_name = data['guarantor_name']  # Get the guarantor's name
 
     try:
         # Ensure the guarantor exists before adding the subject
@@ -160,6 +172,33 @@ def delete_subject(shortcut):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/updateSubject/<string:shortcut>', methods=['PUT'])
+def update_subject(shortcut):
+    data = request.get_json()
+    subject = Subject.query.filter_by(shortcut=shortcut).first()
+
+    if subject is not None:
+        # Update the subject's attributes if they are provided in the JSON data
+        if 'name' in data:
+            subject.name = data['name']
+        if 'annotation' in data:
+            subject.annotation = data['annotation']
+        if 'credits' in data:
+            subject.credits = data['credits']
+        if 'guarantor_name' in data:
+            subject.guarantor_name = data['guarantor_name']
+
+        try:
+            db.session.commit()
+            return jsonify(subject.as_dict()), 200  # 200 for a successful update
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'Subject not found'}), 404  # 404 if the subject with the specified shortcut doesn't exist
+
 
 
 @my_routes.route('/getSubject/<int:subject_id>', methods=['GET'])
@@ -689,3 +728,5 @@ def get_teacher_personal_preferences():
     except Exception as e:
         # In case of an exception, return an error message
         return jsonify({'error': str(e)}), 500
+
+
