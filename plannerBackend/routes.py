@@ -1,21 +1,23 @@
+import os
+from os.path import join, dirname
 from flask import Blueprint, request, jsonify, session, redirect, url_for, render_template
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import Subject, User, db, Room, SubjectGuardians, TeachingActivity, Schedule, Course_Instructors, \
     Teacher_Personal_Preferences
 from db import User, db
 from functools import wraps
 from sqlalchemy.orm.exc import NoResultFound
+from flask import request, jsonify
 from datetime import datetime
 
 my_routes = Blueprint('my_routes', __name__)
 
 
-from flask import request, jsonify
-
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        if not session.get("user_id"):
             if request.headers.get('Accept') == 'application/json':
                 return jsonify({'redirect': url_for('my_routes.login_view')}), 401
             return redirect(url_for('my_routes.logout'))
@@ -70,20 +72,51 @@ def create_user():
 
 @my_routes.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    username = data.get('name')
-    password = data.get('password')
+    username = request.form.get('name')
+    password = request.form.get('password')
 
-    # Find the user by username
     user = User.query.filter_by(name=username).first()
 
     if user and check_password_hash(user.password, password):
         session.permanent = True
         session['user_id'] = user.id
         session['user_name'] = user.name
-        return jsonify({'success': True, 'user.role': user.role}), 200
+        return render_template('views/admin/adminview.html')
     else:
-        return jsonify({'error': 'Invalid username or password'}), 401
+        return 'Invalid username or password', 401
+
+
+@my_routes.route('/admViewReroute', methods=['GET', 'POST'])
+def admin_view_reroute():
+    return render_template('views/admin/adminview.html')
+
+
+@my_routes.route('/createUserReroute', methods=['GET', 'POST'])
+def create_user_reroute():
+    return render_template('views/admin/admCreateUser.html')
+
+
+@my_routes.route('/updateUserReroute', methods=['GET', 'POST'])
+def update_user_reroute():
+    users_list = get_users()
+    return render_template('views/admin/admUpdateUser.html', users=users_list)
+
+
+@my_routes.route('/updateSubjectReroute', methods=['GET', 'POST'])
+def update_subject_reroute():
+    subject_list = get_subjects()
+    return render_template('views/admin/admUpdateSubject.html', subjects=subject_list)
+
+
+@my_routes.route('/createSubjectReroute', methods=['GET', 'POST'])
+def create_subject_reroute():
+    return render_template('views/admin/admAddSubject.html')
+
+
+@my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
+def delete_user_reroute():
+    users_list = get_users()
+    return render_template('views/admin/admDeleteUser.html', users=users_list)
 
 
 @my_routes.route('/getLogin')
@@ -95,12 +128,12 @@ def get_login():
         return jsonify({'error': 'No user is currently logged in or session expired'}), 40
 
 
-@my_routes.route('/logout')
+@my_routes.route('/logout', methods=['GET', 'POST'])
 def logout():
     # Clear the user's session
     session.clear()
     # Redirect to the login page, or to the home page, as preferred
-    return jsonify({'error': 'Unauthorized'}), 401
+    return render_template('login.html')
 
 
 @my_routes.route('/getUser/<string:name>', methods=['GET'])
@@ -143,12 +176,14 @@ def update_user(name):
 ##subject routes
 
 
-@my_routes.route('/addSubject', methods=['POST'])
+@my_routes.route('/addSubject', methods=['POST', 'GET'])
 @login_required
 def add_subject():
-    data = request.get_json()
-    guarantor_name = data['guarantor_name']  # Get the guarantor's name
-
+    shortcut = request.form.get('shortcut')
+    name = request.form.get('name')
+    annotation = request.form.get('annotation')
+    credits = request.form.get('credits')
+    guarantor_name = request.form.get('id_guarantor')
     try:
         # Ensure the guarantor exists before adding the subject
         guarantor = User.query.filter_by(name=guarantor_name).first()
@@ -156,20 +191,29 @@ def add_subject():
             return jsonify({'error': 'Guarantor user not found'}), 404
 
         new_subject = Subject(
-            shortcut=data['shortcut'],
-            name=data['name'],
-            annotation=data.get('annotation', ''),
-            credits=data['credits'],
+            shortcut=shortcut,
+            name=name,
+            annotation=annotation,
+            credits=credits,
             guarantor_name=guarantor_name  # Use the guarantor's name as the foreign key
         )
 
         db.session.add(new_subject)
         db.session.commit()
-        return jsonify(new_subject.as_dict()), 201
+        return render_template('views/admin/admAddSubject.html')
 
+    except IntegrityError as e:
+        db.session.rollback()
+        # Check if it's a duplicate entry error
+        if 'Duplicate entry' in str(e):
+            friendly_error = "This subject already exists. Please use a different shortcut."
+        else:
+            friendly_error = "A database error occurred. Please try again."
+        return render_template('views/admin/admAddSubject.html', error=friendly_error)
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        # For other types of errors, you might want to log them or handle them differently
+        return render_template('views/admin/admAddSubject.html', error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/deleteSubject/<string:shortcut>', methods=['DELETE'])
@@ -200,30 +244,38 @@ def delete_subject(shortcut):
         return jsonify({'error': str(e)}), 500
 
 
-@my_routes.route('/updateSubject/<string:shortcut>', methods=['PUT'])
-def update_subject(shortcut):
-    data = request.get_json()
-    subject = Subject.query.filter_by(shortcut=shortcut).first()
+@my_routes.route('/updateSubject', methods=['POST', 'GET'])
+def update_subject():
+    db.session.rollback()
+    old_shortcut = request.form.get('old_shortcut')
+    annotation = request.form.get('annotation')
+    name = request.form.get('name')
+    credits = request.form.get('credits')
+    guarantor_name = request.form.get('id_guarantor')
 
-    if subject is not None:
-        # Update the subject's attributes if they are provided in the JSON data
-        if 'name' in data:
-            subject.name = data['name']
-        if 'annotation' in data:
-            subject.annotation = data['annotation']
-        if 'credits' in data:
-            subject.credits = data['credits']
-        if 'guarantor_name' in data:
-            subject.guarantor_name = data['guarantor_name']
+    subject = Subject.query.filter_by(shortcut=old_shortcut).first()
 
-        try:
-            db.session.commit()
-            return jsonify(subject.as_dict()), 200  # 200 for a successful update
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 500
-    else:
-        return jsonify({'error': 'Subject not found'}), 404  # 404 if the subject with the specified shortcut doesn't exist
+    if subject is None:
+        return render_template('views/admin/admUpdateSubject.html', error='Subject not found')
+
+    try:
+        if annotation:
+            subject.annotation = annotation
+        if credits:
+            subject.credits = credits
+        if guarantor_name:
+            subject.guarantor_name = guarantor_name
+        if name:
+            subject.name = name
+
+        db.session.commit()
+        return redirect('/updateSubjectReroute')
+
+    except Exception as e:
+        db.session.rollback()
+        return render_template('views/admin/admUpdateSubject.html',
+                               error="An unexpected error occurred. Please try again.")
+
 
 
 
@@ -285,55 +337,83 @@ def delete_room_admin(title):
 
 ######################################################################################
 ###Admin Routes
-@my_routes.route('/createUserAdmin', methods=['POST'])
+from sqlalchemy.exc import IntegrityError
+
+
+@my_routes.route('/createUserAdmin', methods=['POST', 'GET'])
 def create_user_admin():
-    data = request.get_json()
-
-    # Assuming your JSON data includes 'name', 'password', and 'role' fields
-    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=data['role'])
-
+    name = request.form.get('name')
+    password = request.form.get('password')
+    role = request.form.get('role')
     try:
+        new_user = User(
+            name=name,
+            password=generate_password_hash(password),
+            role=role
+        )
+
         db.session.add(new_user)
         db.session.commit()
-        return jsonify(new_user.as_dict()), 201
+        # Redirect or render success page/template
+        return render_template('views/admin/admCreateUser.html')
+    except IntegrityError as e:
+        db.session.rollback()
+        # Check if it's a duplicate entry error
+        if 'Duplicate entry' in str(e):
+            friendly_error = "This user already exists. Please use a different name."
+        else:
+            friendly_error = "A database error occurred. Please try again."
+            return render_template('views/admin/admCreateUser.html', error=friendly_error)
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        # For other types of errors, handle them appropriately
+        return render_template('views/admin/admCreateUser.html', error="An unexpected error occurred. Please try again.")
 
 
-@my_routes.route('/updateUserAdmin/<string:name>', methods=['PUT'])
-def update_user_admin(name):
-    data = request.get_json()
-    user = User.query.filter_by(name=name).first()
+@my_routes.route('/updateUserAdmin', methods=['POST', 'GET'])
+def update_user_admin():
+    # Handle form submission for updating user details
+    old_name = request.form.get('old_name')
+    new_name = request.form.get('new_name')
+    password = request.form.get('password')
+    role = request.form.get('role')
 
-    if user is not None:
-        # Update the user's attributes if they are provided in the JSON data
-        if 'name' in data and data['name'] != "":
-            user.name = data['name']
-        if 'password' in data:
-            hashed_password = generate_password_hash(data['password'])
-            user.password = hashed_password
-        if 'role' in data:
-            user.role = data['role']
+    user = User.query.filter_by(name=old_name).first()
+    if user is None:
+        #todo error
+        return jsonify({'error': 'User not found'}), 404
 
-        try:
-            db.session.commit()
-            return jsonify(user.as_dict()), 200  # 200 for a successful update
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 500
-    else:
-        return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
+    try:
+        if new_name:
+            user.name = new_name
+        if password:
+            user.password = generate_password_hash(password)
+        if role:
+            user.role = role
+        db.session.commit()
+        return redirect('/updateUserReroute')
+    except IntegrityError as e:
+        db.session.rollback()
+        if 'Duplicate entry' in str(e):
+            error_message = "This username already exists. Please choose a different name."
+        else:
+            error_message = "A database error occurred. Please try again."
+        return render_template('views/admin/admUpdateUser.html', error=error_message)
+    except Exception as e:
+        db.session.rollback()
+        return render_template('views/admin/admUpdateUser.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
-@my_routes.route('/deleteUserAdmin/<string:name>', methods=['DELETE'])
-def delete_user_admin(name):
+@my_routes.route('/deleteUserAdmin', methods=['DELETE', 'POST', 'GET'])
+def delete_user_admin():
+    name = request.form.get('name')
     try:
         user = User.query.filter_by(name=name).first()
         if user is not None:
             db.session.delete(user)
             db.session.commit()
-            return jsonify(user.as_dict()), 204
+            return redirect('/deleteUserReroute')
         else:
             return jsonify({'error': 'No user named ' + name}), 404
     except Exception as e:
@@ -651,10 +731,11 @@ def get_users():
         users_list = [user.as_dict() for user in users]
 
         # Return the list in JSON format
-        return jsonify(users_list), 200
+        return users_list
     except Exception as e:
-        # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        #todo fix error
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/getSubjects', methods=['GET'])
@@ -667,10 +748,11 @@ def get_subjects():
         subjects_list = [subject.as_dict() for subject in subjects]
 
         # Return the list in JSON format
-        return jsonify(subjects_list), 200
+        return subjects_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/getRooms', methods=['GET'])

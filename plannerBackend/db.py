@@ -121,8 +121,9 @@ class Schedule(db.Model):
 class Course_Instructors(db.Model):
     __tablename__ = 'course_instructors'
 
-    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'), primary_key=True)
-    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE'), primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'))
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE'))
 
 class Teacher_Personal_Preferences(db.Model):
     __tablename__ = 'teacher_personal_preferences'

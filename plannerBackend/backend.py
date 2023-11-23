@@ -1,4 +1,6 @@
 from flask import Flask
+from flask_session import Session
+
 from db import db
 from routes import my_routes
 from flask_cors import CORS
@@ -8,10 +10,14 @@ from datetime import timedelta
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, supports_credentials=True)
     swagger = Swagger(app)
-    app.secret_key='noonecangesthisiiskey'
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    ##secret key
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_TYPE"] = "filesystem"
+    app.config["SECRET_KEY"] = "MYSECRETKEY"
+
+    Session(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
         "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"

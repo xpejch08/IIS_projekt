@@ -51,11 +51,12 @@ CREATE TABLE subject_guardians (
 
 -- Course Instructors Table
 CREATE TABLE course_instructors (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     teacher_name VARCHAR(255),
     shortcut varchar(255),
-    PRIMARY KEY (teacher_name, shortcut),
+    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE,
     FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE,
-    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE
+    PRIMARY KEY (id)
 );
 
 -- Teacher Personal Preferences Table
