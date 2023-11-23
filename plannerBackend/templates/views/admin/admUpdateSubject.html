@@ -1,144 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rozvrchol</title>
-<!-- Include Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 400px;
+    }
+
+    h2 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-top: 50px;
+    }
+
+    .label {
+      width: 100%;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Update Subject</h2>
-        <form id="subjectForm">
-          <div class="form-group">
-            <label for="oldshortcut">Shortcut:</label>
-            <!-- Updated the input to a dropdown/select list -->
-            <select style="width: 300px;" class="form-control" id="oldshortcut" required>
-              <!-- Options will be dynamically added here -->
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="shortcut">New shortcut:</label>
-            <input style="width: 300px;" type="text" class="form-control" id="shortcut" >
-          </div>
-          <div class="form-group">
-            <label for="name">Name:</label>
-            <input style="width: 300px;" type="text" class="form-control" id="name" >
-          </div> 
-          <div class="form-group">
-            <label for="annotation">Annotation:</label>
-            <input style="width: 300px;" type="text" class="form-control" id="annotation">
-          </div>
-          <div class="form-group">
-            <label for="credits">Credits:</label>
-            <input style="width: 300px;" type="number" class="form-control" id="credits" >
-          </div>
-          <div class="form-group">
-            <label for="id_guarantor">Garant:</label>
-            <input style="width: 300px;" type="text" class="form-control" id="id_guarantor" >
-          </div>
-          <button type="submit" class="btn btn-primary">Update Subject</button>
-          
-        </form>
-        <div style="padding-top: 20px">
-          <form id="guest"action="adminview.html">
-            <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
-          </form>
-        </div>
-        
+  <div class="container">
+    <h2>UPDATE A COURSE</h2>
+    <form id="subjectForm">
+      <div class="form-group">
+        <label class="label" for="oldshortcut">Choose a course to update</label>
+        <!-- Updated the input to a dropdown/select list -->
+        <select class="form-control" id="oldshortcut" required>
+          <!-- Options will be dynamically added here -->
+        </select>
       </div>
-    
-    
-  </form>
-  
-  <!-- Modal #########################################################################################################-->
+      <div class="form-group">
+        <input type="text" class="form-control" id="shortcut" placeholder="New course abbreviation">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" id="name" placeholder="New course title">
+      </div> 
+      <div class="form-group">
+        <input type="text" class="form-control" id="annotation" placeholder="New course annotation">
+      </div>
+      <div class="form-group">
+        <input type="number" class="form-control" id="credits" min="0" max="20" placeholder="New number of credits">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" id="id_guarantor" placeholder="New course guarantor">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Update a course</button>
+    </form>
+
+    <div class="form-group">
+      <form id="guest" action="adminview.html">
+        <input type="submit" class="btn btn-secondary btn-block" value="Back to the administrator menu" />
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal -->
   <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Message</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalContent">
-                <!-- Content will be dynamically updated here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Message</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
+        <div class="modal-body" id="modalContent">
+          <!-- Content will be dynamically updated here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="location.reload();" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
-</div>
-</div>
+  </div>
 
-<!-- Include jQuery and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Include jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
+  <script>
+    function openDynamicContentModal(message, isSuccess) {
+      // Set the dynamic content
+      $('#modalContent').html('<p>' + message + '</p>');
+      // Set the modal title and style based on success
+      var modalTitle = isSuccess ? 'Success' : 'Error';
+      var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
+      // Update modal title and header color
+      $('.modal-title').text(modalTitle);
+      $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
+      // Show the modal
+      $('#dynamicContentModal').modal('show');
+    }
 
-function openDynamicContentModal(message, isSuccess) {
-   // Set the dynamic content
-   $('#modalContent').html('<p>' + message + '</p>');
-   // Set the modal title and style based on success
-   var modalTitle = isSuccess ? 'Success' : 'Error';
-   var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
-   // Update modal title and header color
-   $('.modal-title').text(modalTitle);
-   $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
-   // Show the modal
-   $('#dynamicContentModal').modal('show');
-}
-$(document).ready(function() {
+    $(document).ready(function () {
+      $.ajax({
+        type: 'GET',
+        url: 'http://localhost:5000/getSubjects',
+        success: function (response) {
+          // Loop through the subjects and add options to the dropdown
+          for (var i = 0; i < response.length; i++) {
+            $('#oldshortcut').append('<option value="' + response[i].shortcut + '">' + response[i].shortcut + '</option>');
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+          openDynamicContentModal('Failed to fetch subjects. Please try again. ERROR: ' + error, false);
+        }
+      });
 
-  $.ajax({
-  type: 'GET',
-  url: 'http://localhost:5000/getSubjects',
-  success: function(response) {
-    // Loop through the subjects and add options to the dropdown
-    for (var i = 0; i < response.length; i++) {
-      $('#oldshortcut').append('<option value="' + response[i].shortcut + '">' + response[i].shortcut + '</option>');
-    } 
-  },
-  error: function(xhr, status, error) {
-    console.error(error);
-    openDynamicContentModal('Failed to fetch subjects. Please try again. ERROR: ' + error, false);
-  }
-});
+      $('#subjectForm').on('submit', function (e) {
+        e.preventDefault();
 
-  $('#subjectForm').on('submit', function(e) {
-    e.preventDefault();
+        var subjectData = {
+          oldshortcut: $('#oldshortcut').val(),
+          shortcut: $('#shortcut').val(),
+          name: $('#name').val(),
+          annotation: $('#annotation').val(),
+          credits: $('#credits').val(),
+          id_guarantor: $('#id_guarantor').val()
+          //TODO: TEACHERS also
+        };
 
-    var subjectData = {
-        oldshortcut: $('#oldshortcut').val(),
-        shortcut: $('#shortcut').val(),
-        name: $('#name').val(),
-        annotation: $('#annotation').val(),
-        credits: $('#credits').val(),
-        id_guarantor: $('#id_guarantor').val()
-        //TODO: TEACHERS also
-    };
-
-    $.ajax({
-      type: 'PUT',
-      url: 'http://localhost:5000/updateSubject/'+subjectData.oldshortcut,
-      contentType: 'application/json',
-      data: JSON.stringify(subjectData),
-      success: function(response) {
-        console.log(response);
-        openDynamicContentModal('Operation was successful!', true);
-      },
-      error: function(xhr, status, error) {
-        console.error(error);
-        openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
-      }
+        $.ajax({
+          type: 'PUT',
+          url: 'http://localhost:5000/updateSubject/' + subjectData.oldshortcut,
+          contentType: 'application/json',
+          data: JSON.stringify(subjectData),
+          success: function (response) {
+            console.log(response);
+            openDynamicContentModal('Operation was successful!', true);
+          },
+          error: function (xhr, status, error) {
+            console.error(error);
+            openDynamicContentModal('Operation failed. Please try again. ERROR: ' + error, false);
+          }
+        });
+      });
     });
-  });
-});
-</script>
+  </script>
 
 </body>
 </html>
