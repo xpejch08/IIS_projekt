@@ -8,7 +8,7 @@
   <style>
     body {
       background-color: #f8f9fa;
-      margin: 20px;
+      margin-top: 50px;
     }
     
     h1 {
@@ -16,6 +16,10 @@
       font-weight: bold;
       color: #007bff;
       margin-bottom: 20px;
+    }
+
+    .col {
+      text-align: center;
     }
     
     .btn {
@@ -54,18 +58,19 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="col-8">
-        <h1>ADMIN MENU</h1>
-      </div>
-      <div class="col-4 text-right">
-        <form action="../../index.html">
-          <input type="submit" class="btn btn-secondary" value="Log out" />
-        </form>
-      </div>
+  <div class="row">
+    <div class="col"></div>
+    <div class="col">
+      <h1 class="text-center">ADMIN MENU</h1>
     </div>
+    <div class="col">
+      <form action="../../index.html">
+        <input type="submit" class="btn btn-secondary" value="Log out" />
+      </form>
+    </div>
+  </div>
 
+  <div class="container">
     <div class="action-group">
       <p>Users</p>
       <form id="guest" action="admCreateUser.html">
