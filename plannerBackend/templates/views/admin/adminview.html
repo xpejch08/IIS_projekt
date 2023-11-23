@@ -5,7 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rozvrchol</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../styles.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin: 20px;
+    }
+    
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      font-size: 1em;
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      margin-top: 20px;
+    }
+    
+    .action-group {
+      margin: 20px auto;
+      max-width: 400px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      background-color: #fff;
+      text-align: center;
+    }
+    
+    p {
+      color: #6c757d;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -23,69 +69,69 @@
     <div class="action-group">
       <p>Users</p>
       <form id="guest" action="admCreateUser.html">
-        <input type="submit" class="btn btn-primary" value="Create a user" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create a user" />
       </form>
       <form id="guest" action="admUpdateUser.html">
-        <input type="submit" class="btn btn-primary" value="Update a user" />
+        <input type="submit" class="btn btn-primary btn-block" value="Update a user" />
       </form>
       <form id="guest" action="admDeleteUser.html">
-        <input type="submit" class="btn btn-primary" value="Delete a user" />
+        <input type="submit" class="btn btn-primary btn-block" value="Delete a user" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Subjects</p>
       <form id="guest" action="admAddSubject.html">
-        <input type="submit" class="btn btn-primary" value="Create a subject" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create a subject" />
       </form>
       <form id="guest" action="admUpdateSubject.html">
-        <input type="submit" class="btn btn-primary" value="Update a subject" />
+        <input type="submit" class="btn btn-primary btn-block" value="Update a subject" />
       </form>
       <form id="guest" action="admDeleteSubject.html">
-        <input type="submit" class="btn btn-primary" value="Delete a subject" />
+        <input type="submit" class="btn btn-primary btn-block" value="Delete a subject" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Rooms</p>
       <form id="guest" action="admCreateRoom.html">
-        <input type="submit" class="btn btn-primary" value="Create a room" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create a room" />
       </form>
       <form id="guest" action="admDeleteRoom.html">
-        <input type="submit" class="btn btn-primary" value="Delete a room" />
+        <input type="submit" class="btn btn-primary btn-block" value="Delete a room" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Teaching activities</p>
       <form id="guest" action="admAddTeachingActivity.html">
-        <input type="submit" class="btn btn-primary" value="Create a teaching activity" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create a teaching activity" />
       </form>
       <form id="guest" action="admDeleteTeachingActivity.html">
-        <input type="submit" class="btn btn-primary" value="Delete a teaching activity" />
+        <input type="submit" class="btn btn-primary btn-block" value="Delete a teaching activity" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Teachers</p>
       <form id="guest" action="admAddTeacherToSubject.html">
-        <input type="submit" class="btn btn-primary" value="Add a subject teacher" />
+        <input type="submit" class="btn btn-primary btn-block" value="Add a subject teacher" />
       </form>
       <form id="guest" action="admDeleteTeacherFromSubject.html">
-        <input type="submit" class="btn btn-primary" value="Remove a subject teacher" />
+        <input type="submit" class="btn btn-primary btn-block" value="Remove a subject teacher" />
       </form>
       <form id="guest" action="admSetGuarantorOfSubject.html">
-        <input type="submit" class="btn btn-primary" value="Set a subject guarantor" />
+        <input type="submit" class="btn btn-primary btn-block" value="Set a subject guarantor" />
       </form>
       <form id="guest" action="admDefinePreferences.html">
-        <input type="submit" class="btn btn-primary" value="Set teacher preferences" />
+        <input type="submit" class="btn btn-primary btn-block" value="Set teacher preferences" />
       </form>
     </div>
 
     <div class="action-group">
       <p>Activities</p>
       <form id="guest" action="admAddActivityInSchedule.html">
-        <input type="submit" class="btn btn-primary" value="Create an activity in the schedule" />
+        <input type="submit" class="btn btn-primary btn-block" value="Create an activity in the schedule" />
       </form>
     </div>
   </div>
