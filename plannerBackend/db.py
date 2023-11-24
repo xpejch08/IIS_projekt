@@ -89,7 +89,7 @@ class TeachingActivity(db.Model):
             'duration': self.duration,
             'repetition': self.repetition,
             'shortcut': self.shortcut,
-            'preference': self.preferences,
+            'preference': self.preference,
         }
 
 
