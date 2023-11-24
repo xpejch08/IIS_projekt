@@ -57,18 +57,20 @@
 
   <div class="container">
     <h2>DELETE A ROOM</h2>
-    <form id="roomForm">
+    <form id="roomForm" action="http://localhost:5000/deleteRoomAdmin" method="post">
       <div class="form-group">
         <label class="label" for="title">Choose a room to delete</label>
         <!-- Updated the input to a dropdown/select list -->
-        <select class="form-control" id="title" required>
-          <!-- Options will be dynamically added here -->
+        <select class="form-control" id="title" name="title" required>
+          {% for room in rooms %}
+            <option value="{{ room.title }}">{{ room.title }}</option>
+        {% endfor %}
         </select>
       </div>
       <button type="submit" class="btn btn-primary btn-block">Delete a room</button>
     </form>
     <div class="form-group">
-      <form id="guest" action="adminview.html">
+      <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
         <input type="submit" class="btn btn-secondary btn-block" value="Back to the administrator menu" />
       </form>
     </div>
@@ -94,65 +96,6 @@
     </div>
   </div>
 
-  <!-- Include jQuery and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-  <script>
-    function openDynamicContentModal(message, isSuccess) {
-      // Set the dynamic content
-      $('#modalContent').html('<p>' + message + '</p>');
-      // Set the modal title and style based on success
-      var modalTitle = isSuccess ? 'Success' : 'Error';
-      var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
-      // Update modal title and header color
-      $('.modal-title').text(modalTitle);
-      $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
-      // Show the modal
-      $('#dynamicContentModal').modal('show');
-    }
-
-    $(document).ready(function() {
-      $.ajax({
-        type: 'GET',
-        url: 'http://localhost:5000/getRooms',
-        success: function(response) {
-          // Loop through the subjects and add options to the dropdown
-          for (var i = 0; i < response.length; i++) {
-            $('#title').append('<option value="' + response[i].title + '">' + response[i].title + '</option>');
-          } 
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-          openDynamicContentModal('Failed to fetch rooms. Please try again. ERROR: ' + error, false);
-        }
-      });
-
-      $('#roomForm').on('submit', function(e) {
-        e.preventDefault();
-
-        var roomData = {
-          title: $('#title').val(),
-          capacity: $('#capacity').val()
-        };
-
-        $.ajax({
-          type: 'DELETE',
-          url: 'http://localhost:5000/deleteRoomAdmin/'+roomData.title,
-          contentType: 'application/json',
-          data: JSON.stringify(roomData),
-          success: function(response) {
-            console.log(response);
-            openDynamicContentModal('Operation was successful!', true);
-          },
-          error: function(xhr, status, error) {
-            console.error(error);
-            openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
-          }
-        });
-      });
-    });
-  </script>
 
 </body>
 </html>

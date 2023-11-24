@@ -124,6 +124,12 @@ def delete_user_reroute():
     return render_template('views/admin/admDeleteUser.html', users=users_list)
 
 
+@my_routes.route('/deleteRoomReroute', methods=['GET', 'POST'])
+def delete_room_reroute():
+    room_list = get_rooms()
+    return render_template('views/admin/admDeleteRoom.html', rooms=room_list)
+
+
 @my_routes.route('/deleteSubjectReroute', methods=['GET', 'POST'])
 def delete_subject_reroute():
     subject_list = get_subjects()
@@ -313,7 +319,7 @@ def create_room_admin():
     try:
         exists = Room.query.filter_by(title=title).first()
         if exists:
-            return render_template('views/admin/admCreateRoom.html', error="This room already exists. Please use a different name.")
+            return render_template('views/admin/admCreateRoom.html', error="This room doesnt exists. Please use a different name.")
         new_room = Room(
             title=title,
             capacity=room_capacity
@@ -326,27 +332,29 @@ def create_room_admin():
         return render_template('views/admin/admCreateRoom.html', error="An unexpected error occurred. Please try again.")
 
 
-@my_routes.route('/deleteRoomAdmin/<string:title>', methods=['DELETE'])
-def delete_room_admin(title):
-    # Attempt to find the room by its ID
-    room_to_delete = Room.query.filter_by(title=title).first()
+@my_routes.route('/deleteRoomAdmin', methods=['DELETE', 'POST', 'GET'])
+def delete_room_admin():
+    room_title = request.form.get('title')
+    room_to_delete = Room.query.filter_by(title=room_title).first()
 
     if room_to_delete is None:
         # If no room is found, return a 404 error
-        return jsonify({'error': 'Room not found'}), 404
+        return render_template('views/admin/admCreateRoom.html',
+                               error="The room doesnt exist Please try again.")
 
     try:
         # If the room is found, delete it from the database
         db.session.delete(room_to_delete)
         db.session.commit()
         # Return a 200 status code to indicate success
-        return jsonify({'success': 'Room deleted'}), 200
+        return redirect('/deleteRoomReroute')
     except Exception as e:
         # If there's an error during the deletion, rollback the session
         db.session.rollback()
         print(f"Error: {e}")
         # Return a 500 internal server error status code
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admDeleteRoom.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 ######################################################################################
@@ -779,10 +787,11 @@ def get_rooms():
         rooms_list = [room.as_dict() for room in rooms]
 
         # Return the list in JSON format
-        return jsonify(rooms_list), 200
+        return rooms_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/getTeachingActivities', methods=['GET'])
