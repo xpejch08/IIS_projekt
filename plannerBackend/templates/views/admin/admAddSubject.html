@@ -34,7 +34,12 @@
     </div>
     <div class="form-group">
       <label for="id_guarantor">Garant:</label>
-      <input style="width: 300px;" type="text" class="form-control" id="id_guarantor" name="id_guarantor" required>
+        <select class="form-control" id="id_guarantor" name="id_guarantor" required>
+          {% for guarant in guarantors %}
+            <option value="{{ guarant.name }}">{{ guarant.name }}</option>
+          {% endfor %}
+        </select>
+
     </div>
     <button type="submit" class="btn btn-primary">Create Subject</button>
 

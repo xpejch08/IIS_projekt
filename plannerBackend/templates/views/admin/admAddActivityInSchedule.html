@@ -21,7 +21,7 @@
         <select class="form-control" id="teaching_activity_label" name="teaching_activity"  required onchange="this.form.submit()">
             <option value="" selected>-- Select an option --</option>
             {% for activity in activities %}
-            <option value="{{ activity.label }}">{{ activity.label }}</option>
+                <option value="{{ activity.label }}">{{ activity.label }}</option>
             {% endfor %}
         </select>
       </div>

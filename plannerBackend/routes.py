@@ -129,7 +129,8 @@ def admin_view_reroute():
 def student_view_reroute():
     schedule = get_schedule()
     activities = get_teaching_activities()
-    return render_template('views/studentview.html', schedule=schedule, activities=activities)
+    rooms=get_rooms()
+    return render_template('views/studentview.html', schedule=schedule, activities=activities, rooms=rooms)
 
 @my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
 @login_required_guarantor
@@ -156,7 +157,8 @@ def update_user_reroute():
 @login_required_admin
 def update_subject_reroute():
     subject_list = get_subjects()
-    return render_template('views/admin/admUpdateSubject.html', subjects=subject_list)
+    guarantors = get_garants()
+    return render_template('views/admin/admUpdateSubject.html', subjects=subject_list, guarantors=guarantors)
 
 
 @my_routes.route('/setSubjectGuarantorReroute', methods=['GET', 'POST'])
@@ -180,7 +182,8 @@ def set_teacher_preferences_reroute():
 @my_routes.route('/createSubjectReroute', methods=['GET', 'POST'])
 @login_required_admin
 def create_subject_reroute():
-    return render_template('views/admin/admAddSubject.html')
+    guarantors = get_garants()
+    return render_template('views/admin/admAddSubject.html', guarantors=guarantors)
 
 
 @my_routes.route('/createRoomReroute', methods=['GET', 'POST'])
@@ -698,7 +701,14 @@ def add_teacher_to_subject():
         return render_template('views/admin/adminview.html',
                                error="Shortcut doesn't exist. Please try again.")
 
+    query = Course_Instructors.query.filter_by(teacher_name=name).all()
+
+    # Find the entry with the matching shortcut
+    matching_entry = next((entry for entry in query if entry.shortcut == shortcut), None)
     # Create a new CourseInstructors object
+    if matching_entry:
+        return render_template('views/admin/adminview.html',
+                               error="This teacher is already assigned to this subject.")
     new_course_instructor = Course_Instructors(
         teacher_name=name,
         shortcut=shortcut

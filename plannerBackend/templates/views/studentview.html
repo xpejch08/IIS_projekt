@@ -76,10 +76,11 @@
 
     var activity_list = {{ activities|tojson|safe }};
     var schedule = {{ schedule|tojson|safe }};
+    var rooms = {{ rooms|tojson|safe }};
     $(document).ready(function() {
         console.log(activity_list);
         listActivities(activity_list);
-        drawTimetable(schedule);
+        updateActivities(schedule,activity_list,rooms);
 
 
     });
@@ -98,7 +99,31 @@
             activities.forEach(activity => activitiesList.append("<li style='text-align: left'>" + activity.shortcut + ' - ' + activity.label + "</li>"));
 
     }
-    function drawTimetable(schedule) {
+    function updateActivities(schedule, activities,rooms) {
+        console.log("drawTimetable");
+        console.log(schedule);
+        console.log(activities);
+        console.log(rooms);
+        for (let act of activities) {
+            for (let sch of schedule) {
+                if (sch.teaching_activity_name === act.label) {
+                    act.hour = "pero";
+                    console.log(act.hour);
+                    console.log(sch.hour);
+                    act.hour = sch.hour;
+                    act.day = sch.day;
+                    act.instructor_name = sch.instructor_name;
+                    for (let rm of rooms){
+                        if (rm.title === sch.room_name) {
+                            act.room = rm.title;
+                        }
+                    }
+                }
+            }
+
+        }
+        console.log(activities);
+
 
         for (activity in activities)
             console.log(activity.shortcut);
