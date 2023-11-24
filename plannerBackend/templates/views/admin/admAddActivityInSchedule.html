@@ -13,18 +13,19 @@
   <h2>Add activity in schedule</h2>
     <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
       <div class="form-group">
-        <label for="teaching_activity_label">Label:</label>
-        <select class="form-control" id="teaching_activity_label" name="teaching_activity" required onchange="this.form.submit()">
-          {% for activity in activities %}
+        <label for="teaching_activity_label">Pick a teaching activity:</label>
+        <select class="form-control" id="teaching_activity_label" name="teaching_activity"  required onchange="this.form.submit()">
+            <option value="" selected>-- Select an option --</option>
+            {% for activity in activities %}
             <option value="{{ activity.label }}">{{ activity.label }}</option>
-          {% endfor %}
+            {% endfor %}
         </select>
       </div>
     </form>
   <form id="addActivityInSchedule" action="http://localhost:5000/addActivityInSchedule" method="post">
       <div class="form-group">
-      <label for="picked_label">Picked Label:</label>
-      <select class="form-control" id="picked_label" name="picked_label" required>
+      <label for="picked_label">Activity to be added:</label>
+      <select class="form-control" id="picked_label" name="picked_label" style="appearance: none" disabled>
           {% for picked_activity in picked_activities %}
             <option value="{{ picked_activity.label }}">{{ picked_activity.label }}</option>
           {% endfor %}

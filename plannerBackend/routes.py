@@ -143,6 +143,10 @@ def delete_teaching_activity_reroute():
     teaching_list = get_teaching_activities()
     return render_template('views/admin/admDeleteTeachingActivity.html', teaching_list=teaching_list)
 
+@my_routes.route('/deleteCourseInstructorReroute', methods=['GET', 'POST'])
+def delete_teacher_from_subject_reroute():
+    subjects_list = get_subjects()
+    return render_template('views/admin/admDeleteTeacherFromSubject.html', subjects_list=subjects_list)
 
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
 def delete_user_reroute():
@@ -176,6 +180,31 @@ def get_instructor_for_activity_reroute():
     activities_list = get_teaching_activities()
     instructors, activities = get_course_instructors_ta()
     return render_template('views/admin/admAddActivityInSchedule.html',activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list)
+
+@my_routes.route('/getInstructorsForCourseReroute', methods=['GET', 'POST'])
+def get_instructor_for_course_reroute():
+    subjects_list = get_subjects()
+    instructors, subjects = get_course_instructors_subject()
+    return render_template('views/admin/admDeleteTeacherFromSubject.html',subjects_list=subjects_list, instructors=instructors, picked_subject=subjects)
+
+
+@my_routes.route('/getCourseInstructorsSubject', methods=['GET', 'POST'])
+def get_course_instructors_subject():
+    try:
+        shortcut_req = request.form.get('shortcut')
+
+        course_instructors = Course_Instructors.query.filter_by(shortcut=shortcut_req).all()
+        subjects = Subject.query.filter_by(shortcut=shortcut_req).all()
+
+        # Convert the list of Course_Instructors objects to a list of dictionaries
+        instructors_list = [{'teacher_name': instructor.teacher_name, 'shortcut': instructor.shortcut} for instructor in course_instructors]
+        subjects_list = [{'name': subject.name, 'annotation': subject.annotation, 'shortcut': subject.shortcut, 'credits': subject.credits, 'guarantor_name': subject.guarantor_name} for subject in subjects]
+
+        # Return the list in JSON format
+        return instructors_list, subjects_list
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
 
 
 @my_routes.route('/getLogin')
@@ -684,28 +713,26 @@ def add_teacher_to_subject():
                                error="Unexpected Error.")
 
 
-@my_routes.route('/deleteTeacherFromSubject', methods=['DELETE'])
+@my_routes.route('/deleteTeacherFromSubject', methods=['DELETE', 'POST', 'GET'])
 def delete_teacher_from_subject():
-    data = request.get_json()
-    teacher_username = data.get('username')
-    subject_shortcut = data.get('shortcut')
-
-    # Check if the course instructor entry exists
-    course_instructor = Course_Instructors.query.filter_by(
-        teacher_name=teacher_username,
-        shortcut=subject_shortcut
-    ).first()
-    if not course_instructor:
-        return jsonify({'error': 'Teacher not found for the specified subject'}), 404
+    shortcut = request.form.get('shortcut')
+    name = request.form.get('name')
 
     try:
-        # Delete the entry from the database
-        db.session.delete(course_instructor)
-        db.session.commit()
-        return jsonify({'success': 'Teacher removed from subject successfully'}), 200
+
+        query = Course_Instructors.query.filter_by(teacher_name=name).all()
+        matching_entry = next((entry for entry in query if entry.shortcut == shortcut), Course_Instructors)
+        if matching_entry:
+
+            db.session.delete(matching_entry)
+            db.session.commit()
+            return redirect('/deleteTeacherFromSubjectReroute')  # No content
+        else:
+
+            return render_template('views/admin/admDeleteTeacherFromSubject.html', error='Teacher/subject not found')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admDeleteTeacherFromSubject.html', error=str(e))
 
 
 @my_routes.route('/definePreferences', methods=['POST'])
