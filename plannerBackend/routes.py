@@ -141,7 +141,7 @@ def create_teaching_activity_reroute():
 @my_routes.route('/deleteTeachingActivityReroute', methods=['GET', 'POST'])
 def delete_teaching_activity_reroute():
     teaching_list = get_teaching_activities()
-    return render_template('views/admin/admDeleteTeachingActivity.html.html', teachers=teaching_list)
+    return render_template('views/admin/admDeleteTeachingActivity.html', teaching_list=teaching_list)
 
 
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
@@ -598,8 +598,9 @@ def add_teaching_activity():
                                error="An unexpected error occurred. Please try again.")
 
 
-@my_routes.route('/deleteTeachingActivity/<string:label>', methods=['DELETE'])
-def delete_teaching_activity(label):
+@my_routes.route('/deleteTeachingActivity', methods=['DELETE', 'POST', 'GET'])
+def delete_teaching_activity():
+    label = request.form.get('label')
     """
         Delete a teaching activity by its label
         ---
@@ -619,22 +620,18 @@ def delete_teaching_activity(label):
           500:
             description: Internal server error
         """
-    # Try to find the teaching activity by its ID
-    teaching_activity = TeachingActivity.query.filter_by(label=label).first()
-
-    if teaching_activity is None:
-        # If the teaching activity doesn't exist, return a 404 error
-        return jsonify({'error': 'Teaching activity not found'}), 404
-
     try:
-        # If the teaching activity is found, delete it
-        db.session.delete(teaching_activity)
-        db.session.commit()
-        return jsonify({'success': 'Teaching activity deleted'}), 200
+        teachingactivity = TeachingActivity.query.filter_by(label=label).first()
+        if teachingactivity:
+
+            db.session.delete(teachingactivity)
+            db.session.commit()
+            return redirect('/deleteTeachingActivityReroute')  # No content
+        else:
+            return render_template('views/admin/admDeleteTeachingActivity.html', error='Activity not found')
     except Exception as e:
-        # If there's an error during the deletion, rollback the session
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admDeleteTeachingActivity.html', error=str(e))
 
 
 @my_routes.route('/addTeacherToSubject', methods=['POST'])
