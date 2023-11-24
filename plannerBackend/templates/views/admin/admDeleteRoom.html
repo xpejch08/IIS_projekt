@@ -64,7 +64,7 @@
         <select class="form-control" id="title" name="title" required>
           {% for room in rooms %}
             <option value="{{ room.title }}">{{ room.title }}</option>
-        {% endfor %}
+          {% endfor %}
         </select>
       </div>
       <button type="submit" class="btn btn-primary btn-block">Delete a room</button>

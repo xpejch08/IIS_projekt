@@ -57,22 +57,24 @@
 
   <div class="container">
     <h2>CREATE A TEACHING ACTIVITY</h2>
-    <form id="teachingactivityForm">
+    <form id="teachingactivityForm" action="http://localhost:5000/addTeachingActivity" method="post">
       <div class="form-group">
         <label class="label" for="subject_shortcut">Choose a course to add a teaching activity</label>
-        <select class="form-control" id="subject_shortcut" required>
-          <!-- Options will be dynamically added here -->
+        <select class="form-control" id="subject_shortcut" name="subject_shortcut" required>
+          {% for activity in activities %}
+              <option value="{{ activity.shortcut }}">{{ activity.shortcut }}</option>
+          {% endfor %}
         </select>
       </div>
       <div class="form-group">
-        <input type="text" class="form-control" id="label" placeholder="Title" required>
+        <input type="text" class="form-control" id="label" name="label" placeholder="Title" required>
       </div>
       <div class="form-group">
-        <input type="number" class="form-control" id="duration" placeholder="Duration" min="1" max="9" required>
+        <input type="number" class="form-control" id="duration" name="duration" placeholder="Duration" min="1" max="9" required>
       </div>
       <div class="form-group">
         <label class="label" for="repetition">Choose a repetition</label>
-        <select class="form-control" id="repetition" required>
+        <select class="form-control" id="repetition" name="repetition" required>
           <option value="every week">every week</option>
           <option value="even weeks">even weeks</option>
           <option value="odd weeks">odd weeks</option>
@@ -83,7 +85,7 @@
     </form>
   
     <div class="form-group">
-      <form id="guest" action="adminview.html">
+      <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
         <input type="submit" class="btn btn-secondary btn-block" value="Back to the administrator menu" />
       </form>
     </div>
@@ -108,69 +110,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Include jQuery and Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-  <script>
-    function openDynamicContentModal(message, isSuccess) {
-      // Set the dynamic content
-      $('#modalContent').html('<p>' + message + '</p>');
-      // Set the modal title and style based on success
-      var modalTitle = isSuccess ? 'Success' : 'Error';
-      var modalHeaderColor = isSuccess ? 'bg-success' : 'bg-danger';
-      // Update modal title and header color
-      $('.modal-title').text(modalTitle);
-      $('.modal-header').removeClass('bg-success bg-danger').addClass(modalHeaderColor);
-      // Show the modal
-      $('#dynamicContentModal').modal('show');
-    }
-
-    $(document).ready(function() {
-
-      $.ajax({
-        type: 'GET',
-        url: 'http://localhost:5000/getSubjects',
-        success: function(response) {
-          // Loop through the subjects and add options to the dropdown
-          for (var i = 0; i < response.length; i++) {
-            $('#subject_shortcut').append('<option value="' + response[i].shortcut + '">' + response[i].shortcut + '</option>');
-          } 
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-          openDynamicContentModal('Failed to fetch subjects. Please try again. ERROR: ' + error, false);
-        }
-      });
-
-      $('#teachingactivityForm').on('submit', function(e) {
-        e.preventDefault();
-
-        var teachingactivityData = {
-          duration: $('#duration').val(),
-          label: $('#label').val(),
-          repetition: $('#repetition').val(),
-          subject_shortcut: $('#subject_shortcut').val()
-        };
-
-        $.ajax({
-          type: 'POST',
-          url: 'http://localhost:5000/addTeachingActivity',
-          contentType: 'application/json',
-          data: JSON.stringify(teachingactivityData),
-          success: function(response) {
-            console.log(response);
-            openDynamicContentModal('Operation was successful!', true);
-          },
-          error: function(xhr, status, error) {
-            console.error(error);
-            openDynamicContentModal('Operation failed. Please try again. ERROR: '+ error, false);
-          }
-        });
-      });
-    });
-  </script>
 
 </body>
 </html>

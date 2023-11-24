@@ -91,6 +91,13 @@ def admin_view_reroute():
     return render_template('views/admin/adminview.html')
 
 
+@my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
+def create_course_instructor_reroute():
+    teachers_list = get_teachers_and_garants()
+    subjects_list = get_subjects()
+    return render_template('views/admin/admAddTeacherToSubject.html', teachers=teachers_list, subjects=subjects_list)
+
+
 @my_routes.route('/createUserReroute', methods=['GET', 'POST'])
 def create_user_reroute():
     return render_template('views/admin/admCreateUser.html')
@@ -116,6 +123,12 @@ def create_subject_reroute():
 @my_routes.route('/createRoomReroute', methods=['GET', 'POST'])
 def create_room_reroute():
     return render_template('views/admin/admCreateRoom.html')
+
+
+@my_routes.route('/createTeachingActivityReroute', methods=['GET', 'POST'])
+def create_teaching_activity_reroute():
+    teaching_list = get_subjects()
+    return render_template('views/admin/admAddTeachingActivity.html', activities=teaching_list)
 
 
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
@@ -437,6 +450,7 @@ def delete_user_admin():
             db.session.commit()
             return redirect('/deleteUserReroute')
         else:
+            #todo error
             return jsonify({'error': 'No user named ' + name}), 404
     except Exception as e:
         db.session.rollback()
@@ -540,35 +554,34 @@ def add_teaching_activity():
           500:
             description: Internal server error
         """
-    data = request.get_json()
-
-    # Extract data from request
-    label = data['label']
-    duration = data['duration']
-    repetition = data['repetition']
-    subject_shortcut = data['subject_shortcut']
+    shortcut = request.form.get('subject_shortcut')
+    label = request.form.get('label')
+    duration = request.form.get('duration')
+    repetition = request.form.get('repetition')
 
     # Validate data (optional, but recommended)
     # For example, check if the subject exists, the duration is a positive number, etc.
 
     try:
-        querry = Subject.query.filter_by(shortcut=subject_shortcut).first()
+        querry = Subject.query.filter_by(shortcut=shortcut).first()
         if querry is None:
-            return jsonify({'error': 'subject not found'}), 404
+            return render_template('views/admin/adminview.html',
+                                   error="Subject doesn't exist. Please try again.")
 
         new_teaching_activity = TeachingActivity(
             label=label,
             duration=duration,
             repetition=repetition,
-            shortcut=subject_shortcut
+            shortcut=shortcut
         )
         # Add the new object to the database
         db.session.add(new_teaching_activity)
         db.session.commit()
-        return jsonify(new_teaching_activity.as_dict()), 201
+        return redirect('/createTeachingActivityReroute')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/deleteTeachingActivity/<string:label>', methods=['DELETE'])
@@ -759,6 +772,21 @@ def get_users():
         return render_template('views/admin/adminview.html',
                                error="An unexpected error occurred. Please try again.")
 
+@my_routes.route('/getTeachersAndGarants', methods=['GET'])
+def get_teachers_and_garants():
+    try:
+        # Query all users
+        users = User.query.filter(User.role.in_([2, 3])).all()
+
+        # Convert the list of user objects to a list of dictionaries
+        users_list = [user.as_dict() for user in users]
+
+        # Return the list in JSON format
+        return users_list
+    except Exception as e:
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
+
 
 @my_routes.route('/getSubjects', methods=['GET'])
 def get_subjects():
@@ -804,10 +832,11 @@ def get_teaching_activities():
         teaching_activities_list = [activity.as_dict() for activity in teaching_activities]
 
         # Return the list in JSON format
-        return jsonify(teaching_activities_list), 200
+        return teaching_activities_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 ##getCourseInstructors
 
@@ -822,7 +851,7 @@ def get_course_instructors():
         instructors_list = [{'teacher_name': instructor.teacher_name, 'shortcut': instructor.shortcut} for instructor in course_instructors]
 
         # Return the list in JSON format
-        return jsonify(instructors_list), 200
+        return instructors_list
     except Exception as e:
         # In case of an exception, return an error message
         return jsonify({'error': str(e)}), 500
@@ -839,7 +868,7 @@ def get_subject_guardians():
         guardians_list = [{'shortcut': guardian.shortcut, 'teacher_name': guardian.teacher_name} for guardian in subject_guardians]
 
         # Return the list in JSON format
-        return jsonify(guardians_list), 200
+        return guardians_list
     except Exception as e:
         # In case of an exception, return an error message
         return jsonify({'error': str(e)}), 500
