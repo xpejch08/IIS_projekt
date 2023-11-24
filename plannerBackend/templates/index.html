@@ -16,7 +16,12 @@
     }
 
     .container {
-      max-width: 400px;
+      max-width: 640px;
+    }
+
+    .form-container {
+      width: 50%;
+      margin: auto;
     }
 
     h2 {
@@ -29,6 +34,10 @@
 
     .form-group {
       margin-top: 20px;
+    }
+
+    .form-control {
+      font-size: 1em;
     }
 
     .btn {
@@ -51,21 +60,23 @@
 
   <div class="container">
     <h2>SIGN UP</h2>
-    <form id="userForm">
-      <div class="form-group">
-        <input type="text" class="form-control" id="name" placeholder="Username" required>
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-control" id="password" placeholder="Password" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Sign up as a student</button>
-      <a href="login.html" class="btn btn-link btn-block">Already have an account?</a>
-    </form>
-
-    <div id="guest" class="form-group">
-      <form id="guestForm" action="info.html">
-        <input type="submit" class="btn btn-secondary btn-block" value="Log in as a guest" />
+    <div class="form-container">
+      <form id="userForm">
+        <div class="form-group">
+          <input type="text" class="form-control" id="name" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign up as a student</button>
+        <a href="login.html" class="btn btn-link btn-block">Already have an account?</a>
       </form>
+
+      <div id="guest" class="form-group">
+        <form id="guestForm" action="info.html">
+          <input type="submit" class="btn btn-secondary btn-block" value="Log in as a guest"/>
+        </form>
+      </div>
     </div>
   </div>
 
