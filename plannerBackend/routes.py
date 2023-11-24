@@ -113,10 +113,21 @@ def create_subject_reroute():
     return render_template('views/admin/admAddSubject.html')
 
 
+@my_routes.route('/createRoomReroute', methods=['GET', 'POST'])
+def create_room_reroute():
+    return render_template('views/admin/admCreateRoom.html')
+
+
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
 def delete_user_reroute():
     users_list = get_users()
     return render_template('views/admin/admDeleteUser.html', users=users_list)
+
+
+@my_routes.route('/deleteSubjectReroute', methods=['GET', 'POST'])
+def delete_subject_reroute():
+    subject_list = get_subjects()
+    return render_template('views/admin/admDeleteSubject.html', subjects=subject_list)
 
 
 @my_routes.route('/getLogin')
@@ -216,8 +227,9 @@ def add_subject():
         return render_template('views/admin/admAddSubject.html', error="An unexpected error occurred. Please try again.")
 
 
-@my_routes.route('/deleteSubject/<string:shortcut>', methods=['DELETE'])
-def delete_subject(shortcut):
+@my_routes.route('/deleteSubject', methods=['DELETE', 'POST', 'GET'])
+def delete_subject():
+    shortcut = request.form.get('old_shortcut')
     try:
         subject = Subject.query.filter_by(shortcut=shortcut).first()
         if subject:
@@ -229,19 +241,14 @@ def delete_subject(shortcut):
                 for guardian in related_guardians:
                     db.session.delete(guardian)
 
-                # Option 2: Update related subject_guardians entries
-                # for guardian in related_guardians:
-                #     guardian.subject_id = None  # or set to a new value
-                #     db.session.add(guardian)
-
             db.session.delete(subject)
             db.session.commit()
-            return jsonify({'success': 'Subject deleted'}), 204  # No content
+            return redirect('/deleteSubjectReroute')  # No content
         else:
-            return jsonify({'error': 'Subject not found'}), 404
+            return render_template('views/admin/admDeleteSubject.html', error='Subject not found')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admDeleteSubject.html', error=str(e))
 
 
 @my_routes.route('/updateSubject', methods=['POST', 'GET'])
@@ -301,18 +308,22 @@ def get_subject(subject_id):
 
 @my_routes.route('/createRoomAdmin', methods=['POST'])
 def create_room_admin():
-    data = request.get_json()
-    new_room = Room(
-        title=data['title'],
-        capacity=data['capacity'],
-    )
+    title = request.form.get('room_title')
+    room_capacity = request.form.get('room_capacity')
     try:
+        exists = Room.query.filter_by(title=title).first()
+        if exists:
+            return render_template('views/admin/admCreateRoom.html', error="This room already exists. Please use a different name.")
+        new_room = Room(
+            title=title,
+            capacity=room_capacity
+        )
         db.session.add(new_room)
         db.session.commit()
-        return jsonify(new_room.as_dict()), 201
+        return render_template('views/admin/admCreateRoom.html')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admCreateRoom.html', error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/deleteRoomAdmin/<string:title>', methods=['DELETE'])
