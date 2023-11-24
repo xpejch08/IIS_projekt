@@ -54,8 +54,12 @@
   </style>
 </head>
 <body>
-
     <div class="container">
+      {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+{% endif %}
         <h2>Update Subject</h2>
         <form id="subjectForm" action="http://localhost:5000/updateSubject" method="post">
           <div class="form-group">

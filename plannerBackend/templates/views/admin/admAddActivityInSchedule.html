@@ -8,8 +8,12 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-
 <div class="container">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
   <h2>Add activity in schedule</h2>
     <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
       <div class="form-group">
@@ -25,7 +29,7 @@
   <form id="addActivityInSchedule" action="http://localhost:5000/addActivityInSchedule" method="post">
       <div class="form-group">
       <label for="picked_label">Activity to be added:</label>
-      <select class="form-control" id="picked_label" name="picked_label" style="appearance: none" disabled>
+      <select class="form-control" id="picked_label" name="picked_label" style="appearance: none">
           {% for picked_activity in picked_activities %}
             <option value="{{ picked_activity.label }}">{{ picked_activity.label }}</option>
           {% endfor %}

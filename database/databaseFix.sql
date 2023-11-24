@@ -36,6 +36,7 @@ CREATE TABLE teaching_activities (
     duration INT,
     repetition VARCHAR(255),
     shortcut VARCHAR(255),
+    preference VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -118,10 +119,10 @@ INSERT INTO subjects (shortcut, name, annotation, credits, guarantor_name) VALUE
 
 -- Insert test data into the teaching_activities table
 -- The values for id_subject must now correspond to the name of the subject
-INSERT INTO teaching_activities (label, duration, repetition, shortcut) VALUES
-    ('Lecture 1', 90, 'every week', 'MATH101'),
-    ('Lab 1', 120, 'every week', 'PHYS101'),
-    ('Seminar 1', 90, 'odd weeks', 'CHEM101');
+INSERT INTO teaching_activities (label, duration, repetition, shortcut, preference) VALUES
+    ('Lecture 1', 90, 'every week', 'MATH101', 'want windows'),
+    ('Lab 1', 120, 'every week', 'PHYS101', 'atleast 50 chairs'),
+    ('Seminar 1', 90, 'odd weeks', 'CHEM101', 'skibidi toilet');
 
 -- Insert test data into the subject_guardians table
 -- The values for id_subject and id_teacher must correspond to the subject name and teacher name

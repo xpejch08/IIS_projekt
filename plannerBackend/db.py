@@ -75,6 +75,7 @@ class TeachingActivity(db.Model):
     label = db.Column(db.String(255))
     duration = db.Column(db.Integer)
     repetition = db.Column(db.String(255))
+    preference = db.Column(db.String(255))
     shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE', onupdate='CASCADE'))
 
     # Relationships
@@ -88,6 +89,7 @@ class TeachingActivity(db.Model):
             'duration': self.duration,
             'repetition': self.repetition,
             'shortcut': self.shortcut,
+            'preference': self.preferences,
         }
 
 

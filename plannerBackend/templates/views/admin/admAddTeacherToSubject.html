@@ -10,6 +10,11 @@
 <body>
 
 <div class="container">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+{% endif %}
   <h2>Add teacher to subject</h2>
   <form id="addTeacherToSubject" action="http://localhost:5000/addTeacherToSubject" method="post">
     <div class="form-group">

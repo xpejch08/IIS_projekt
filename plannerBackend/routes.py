@@ -14,16 +14,49 @@ from datetime import datetime
 my_routes = Blueprint('my_routes', __name__)
 
 
-def login_required(f):
+def login_required_admin(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("user_id"):
-            if request.headers.get('Accept') == 'application/json':
-                return jsonify({'redirect': url_for('my_routes.login_view')}), 401
-            return redirect(url_for('my_routes.logout'))
+        if not session.get("user_id") or session.get("user_role") != 1:
+            return render_template('views/admin/adminview.html', error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
+
+def login_required_teacher(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_id") or session.get("user_role") != 1 and session.get("user_role") != 3 and session.get("user_role") != 2:
+            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def login_required_scheduler(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_id") or session.get("user_role") != 1:
+            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def login_required_guarantor(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_id") or session.get("user_role") != 1 and session.get("user_role") != 2:
+            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def login_required_student(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_id") or session.get("user_role") != 5:
+            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        return f(*args, **kwargs)
+    return decorated_function
 
 @my_routes.route('/login_view', methods=['GET'])
 def login_view():
@@ -64,10 +97,10 @@ def create_user():
     try:
         db.session.add(new_user)
         db.session.commit()
-        return jsonify(new_user.as_dict()), 201
+        return render_template('views/admin/admCreateUser.html')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admCreateUser.html', error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/login', methods=['POST'])
@@ -81,6 +114,7 @@ def login():
         session.permanent = True
         session['user_id'] = user.id
         session['user_name'] = user.name
+        session['user_role'] = user.role
         return render_template('views/admin/adminview.html')
     else:
         return 'Invalid username or password', 401
@@ -92,6 +126,7 @@ def admin_view_reroute():
 
 
 @my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
+@login_required_guarantor
 def create_course_instructor_reroute():
     teachers_list = get_teachers_and_garants()
     subjects_list = get_subjects()
@@ -99,74 +134,99 @@ def create_course_instructor_reroute():
 
 
 @my_routes.route('/createUserReroute', methods=['GET', 'POST'])
+@login_required_admin
 def create_user_reroute():
     return render_template('views/admin/admCreateUser.html')
 
 
 @my_routes.route('/updateUserReroute', methods=['GET', 'POST'])
+@login_required_admin
 def update_user_reroute():
     users_list = get_users()
     return render_template('views/admin/admUpdateUser.html', users=users_list)
 
 
 @my_routes.route('/updateSubjectReroute', methods=['GET', 'POST'])
+@login_required_admin
 def update_subject_reroute():
     subject_list = get_subjects()
     return render_template('views/admin/admUpdateSubject.html', subjects=subject_list)
 
 
 @my_routes.route('/setSubjectGuarantorReroute', methods=['GET', 'POST'])
+@login_required_admin
 def set_subject_guarantor_reroute():
     subject_list = get_subjects()
     guarantor_list = get_garants()
     return render_template('views/admin/admSetGuarantorOfSubject.html', subjects=subject_list, guarantors=guarantor_list)
 
 
+@my_routes.route('/setTeacherPreferencesReroute', methods=['GET', 'POST'])
+@login_required_teacher
+def set_teacher_preferences_reroute():
+    if session.get('user_role') == 1:
+        teachers_list = get_teachers_and_garants()
+    else:
+        teachers_list = [{'name': session.get('user_name')}]
+    return render_template('views/admin/admDefinePreferences.html', teachers=teachers_list)
+
+
 @my_routes.route('/createSubjectReroute', methods=['GET', 'POST'])
+@login_required_admin
 def create_subject_reroute():
     return render_template('views/admin/admAddSubject.html')
 
 
 @my_routes.route('/createRoomReroute', methods=['GET', 'POST'])
+@login_required_admin
 def create_room_reroute():
     return render_template('views/admin/admCreateRoom.html')
 
 
 @my_routes.route('/createTeachingActivityReroute', methods=['GET', 'POST'])
+@login_required_guarantor
 def create_teaching_activity_reroute():
     teaching_list = get_subjects()
     return render_template('views/admin/admAddTeachingActivity.html', activities=teaching_list)
 
 
 @my_routes.route('/deleteTeachingActivityReroute', methods=['GET', 'POST'])
+@login_required_guarantor
 def delete_teaching_activity_reroute():
     teaching_list = get_teaching_activities()
     return render_template('views/admin/admDeleteTeachingActivity.html', teaching_list=teaching_list)
 
+
 @my_routes.route('/deleteCourseInstructorReroute', methods=['GET', 'POST'])
+@login_required_guarantor
 def delete_teacher_from_subject_reroute():
     subjects_list = get_subjects()
     return render_template('views/admin/admDeleteTeacherFromSubject.html', subjects_list=subjects_list)
 
+
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
+@login_required_admin
 def delete_user_reroute():
     users_list = get_users()
     return render_template('views/admin/admDeleteUser.html', users=users_list)
 
 
 @my_routes.route('/deleteRoomReroute', methods=['GET', 'POST'])
+@login_required_admin
 def delete_room_reroute():
     room_list = get_rooms()
     return render_template('views/admin/admDeleteRoom.html', rooms=room_list)
 
 
 @my_routes.route('/deleteSubjectReroute', methods=['GET', 'POST'])
+@login_required_admin
 def delete_subject_reroute():
     subject_list = get_subjects()
     return render_template('views/admin/admDeleteSubject.html', subjects=subject_list)
 
 
 @my_routes.route('/addTeachingActivityInScheduleReroute', methods=['GET', 'POST'])
+@login_required_scheduler
 def add_teaching_activity_in_schedule_reroute():
     activities_list = get_teaching_activities()
     rooms_list = get_rooms()
@@ -179,13 +239,21 @@ def get_instructor_for_activity_reroute():
     rooms_list = get_rooms()
     activities_list = get_teaching_activities()
     instructors, activities = get_course_instructors_ta()
-    return render_template('views/admin/admAddActivityInSchedule.html',activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list)
+    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list)
+
 
 @my_routes.route('/getInstructorsForCourseReroute', methods=['GET', 'POST'])
 def get_instructor_for_course_reroute():
     subjects_list = get_subjects()
     instructors, subjects = get_course_instructors_subject()
-    return render_template('views/admin/admDeleteTeacherFromSubject.html',subjects_list=subjects_list, instructors=instructors, picked_subject=subjects)
+    return render_template('views/admin/admDeleteTeacherFromSubject.html', subjects_list=subjects_list, instructors=instructors, picked_subject=subjects)
+
+
+@my_routes.route('/deleteTeachingActivityFromScheduleReroute', methods=['GET', 'POST'])
+@login_required_scheduler
+def delete_teaching_activity_from_schedule_reroute():
+    activities_list = get_schedule()
+    return render_template('views/admin/admDeleteTeachingActivityFromSchedule.html', teaching_list=activities_list)
 
 
 @my_routes.route('/getCourseInstructorsSubject', methods=['GET', 'POST'])
@@ -204,16 +272,7 @@ def get_course_instructors_subject():
         return instructors_list, subjects_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
-
-
-@my_routes.route('/getLogin')
-def get_login():
-    # Check if a user is logged in
-    if 'user_name' in session:
-        return jsonify({'name': session['user_name']})
-    else:
-        return jsonify({'error': 'No user is currently logged in or session expired'}), 40
+        return render_template('views/admin/adminview.html', error="Unexpected Error")
 
 
 @my_routes.route('/logout', methods=['GET', 'POST'])
@@ -223,49 +282,12 @@ def logout():
     # Redirect to the login page, or to the home page, as preferred
     return render_template('login.html')
 
-
-@my_routes.route('/getUser/<string:name>', methods=['GET'])
-def get_user(name):
-    try:
-        user = User.query.filter_by(name=name).first()
-        if user is None:
-            return jsonify({'error': 'User not found'}), 404
-        return jsonify(user.as_dict()), 200
-    except NoResultFound:
-        return jsonify({'error': 'User not found'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-@my_routes.route('/updateUser/<string:name>', methods=['PUT'])
-def update_user(name):
-    data = request.get_json()
-    user = User.query.filter_by(name=name).first()
-
-    if user is not None:
-        # Update the user's attributes if they are provided in the JSON data
-        if 'name' in data:
-            user.name = data['name']
-        if 'password' in data:
-            hashed_password = generate_password_hash(data['password'])
-            user.password = hashed_password
-        if 'role' in data:
-            user.role = data['role']
-
-        try:
-            db.session.commit()
-            return jsonify(user.as_dict()), 200  # 200 for a successful update
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': str(e)}), 500
-    else:
-        return jsonify({'error': 'User not found'}), 404  # 404 if the user with the specified name doesn't exist
 ########################################################################################
 ##subject routes
 
 
 @my_routes.route('/addSubject', methods=['POST', 'GET'])
-@login_required
+@login_required_admin
 def add_subject():
     shortcut = request.form.get('shortcut')
     name = request.form.get('name')
@@ -276,7 +298,7 @@ def add_subject():
         # Ensure the guarantor exists before adding the subject
         guarantor = User.query.filter_by(name=guarantor_name).first()
         if guarantor is None:
-            return jsonify({'error': 'Guarantor user not found'}), 404
+            return render_template('views/admin/admAddSubject.html', error="Guarantor doesn't exist. Please try again.")
 
         new_subject = Subject(
             shortcut=shortcut,
@@ -364,21 +386,6 @@ def update_subject():
                                error="An unexpected error occurred. Please try again.")
 
 
-
-
-@my_routes.route('/getSubject/<int:subject_id>', methods=['GET'])
-def get_subject(subject_id):
-    try:
-        subject = Subject.query.get(subject_id)
-        if subject:
-            return jsonify(subject.as_dict()), 200
-        else:
-            return jsonify({'error': 'Subject not found'}), 404
-    except NoResultFound:
-        return jsonify({'error': 'Subject not found'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 ######################################################################################
 ###ROOMS ROUTES
 
@@ -439,6 +446,9 @@ def create_user_admin():
     password = request.form.get('password')
     role = request.form.get('role')
     try:
+        user = User.query.filter_by(name=name).first()
+        if user is not None:
+            return render_template('views/admin/adminview.html', error="This user already exists. Please use a different name.")
         new_user = User(
             name=name,
             password=generate_password_hash(password),
@@ -449,18 +459,10 @@ def create_user_admin():
         db.session.commit()
         # Redirect or render success page/template
         return render_template('views/admin/admCreateUser.html')
-    except IntegrityError as e:
-        db.session.rollback()
-        # Check if it's a duplicate entry error
-        if 'Duplicate entry' in str(e):
-            friendly_error = "This user already exists. Please use a different name."
-        else:
-            friendly_error = "A database error occurred. Please try again."
-            return render_template('views/admin/admCreateUser.html', error=friendly_error)
     except Exception as e:
         db.session.rollback()
         # For other types of errors, handle them appropriately
-        return render_template('views/admin/admCreateUser.html', error="An unexpected error occurred. Please try again.")
+        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/updateUserAdmin', methods=['POST', 'GET'])
@@ -473,8 +475,7 @@ def update_user_admin():
 
     user = User.query.filter_by(name=old_name).first()
     if user is None:
-        #todo error
-        return jsonify({'error': 'User not found'}), 404
+        return render_template('views/admin/admUpdateUser.html', error='User not found')
 
     try:
         if new_name:
@@ -485,13 +486,6 @@ def update_user_admin():
             user.role = role
         db.session.commit()
         return redirect('/updateUserReroute')
-    except IntegrityError as e:
-        db.session.rollback()
-        if 'Duplicate entry' in str(e):
-            error_message = "This username already exists. Please choose a different name."
-        else:
-            error_message = "A database error occurred. Please try again."
-        return render_template('views/admin/admUpdateUser.html', error=error_message)
     except Exception as e:
         db.session.rollback()
         return render_template('views/admin/admUpdateUser.html',
@@ -508,11 +502,10 @@ def delete_user_admin():
             db.session.commit()
             return redirect('/deleteUserReroute')
         else:
-            #todo error
-            return jsonify({'error': 'No user named ' + name}), 404
+            return render_template('views/admin/admDeleteUser.html', error='User not found')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/admDeleteUser.html', error="Unexpected Error")
 
 ######################################################################################
 
@@ -553,7 +546,8 @@ def set_guarantor_of_subject():
     # Check if the subject exists
     subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
     if not subject:
-        return jsonify({'error': 'Subject not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Shortcut doesn't exist. Please try again.")
 
     # Check if the new guarantor exists
     new_guarantor = User.query.filter_by(name=new_guarantor_name).first()
@@ -617,6 +611,7 @@ def add_teaching_activity():
     label = request.form.get('label')
     duration = request.form.get('duration')
     repetition = request.form.get('repetition')
+    preferences = request.form.get('preferences')
 
     # Validate data (optional, but recommended)
     # For example, check if the subject exists, the duration is a positive number, etc.
@@ -631,7 +626,8 @@ def add_teaching_activity():
             label=label,
             duration=duration,
             repetition=repetition,
-            shortcut=shortcut
+            shortcut=shortcut,
+            preference=preferences
         )
         # Add the new object to the database
         db.session.add(new_teaching_activity)
@@ -713,33 +709,40 @@ def add_teacher_to_subject():
                                error="Unexpected Error.")
 
 
-@my_routes.route('/deleteTeacherFromSubject', methods=['DELETE', 'POST', 'GET'])
+@my_routes.route('/deleteTeacherFromSubject', methods=['POST', 'GET', 'DELETE'])
 def delete_teacher_from_subject():
+    # Retrieve form data
     shortcut = request.form.get('shortcut')
     name = request.form.get('name')
 
     try:
-
+        # Query all entries for the given teacher name
         query = Course_Instructors.query.filter_by(teacher_name=name).all()
-        matching_entry = next((entry for entry in query if entry.shortcut == shortcut), Course_Instructors)
-        if matching_entry:
 
+        # Find the entry with the matching shortcut
+        matching_entry = next((entry for entry in query if entry.shortcut == shortcut), None)
+
+        if matching_entry:
+            # If a matching entry is found, delete it
             db.session.delete(matching_entry)
             db.session.commit()
-            return redirect('/deleteTeacherFromSubjectReroute')  # No content
+            # Redirect or render success page/template
+            return redirect('/deleteTeacherFromSubjectReroute')
         else:
-
+            # If no matching entry is found, display an error
             return render_template('views/admin/admDeleteTeacherFromSubject.html', error='Teacher/subject not found')
     except Exception as e:
+        # Handle any exceptions
         db.session.rollback()
-        return render_template('views/admin/admDeleteTeacherFromSubject.html', error=str(e))
+        print(f"Unexpected error: {e}")  # Log the error for debugging
+        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/definePreferences', methods=['POST'])
+@login_required_teacher
 def define_preferences():
-    data = request.get_json()
-    teacher_name = data.get('teacher_name')
-    preferences = data.get('satisfactory_days_and_times')
+    teacher_name = request.form.get('name')
+    preferences = request.form.get('preferences')
 
     # Check if preferences already exist for the teacher
     existing_preferences = Teacher_Personal_Preferences.query.filter_by(teacher_name=teacher_name).first()
@@ -754,10 +757,11 @@ def define_preferences():
 
     try:
         db.session.commit()
-        return jsonify({'success': 'Preferences updated successfully'}), 200
+        return redirect('/setTeacherPreferencesReroute')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/addActivityInSchedule', methods=['POST'])
@@ -800,7 +804,8 @@ def add_activity_in_schedule():
         return redirect('/addTeachingActivityInScheduleReroute')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/getSchedule', methods=['GET'])
@@ -946,7 +951,8 @@ def get_course_instructors():
         return instructors_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/getCourseInstructorsTa', methods=['POST', 'GET'])
@@ -967,7 +973,8 @@ def get_course_instructors_ta():
         return instructors_list, activity_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="Unexpected Error")
 
 
 ##getSubjectGuardians
@@ -984,7 +991,8 @@ def get_subject_guardians():
         return guardians_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="Unexpected Error")
 
 
 @my_routes.route('/getTeacherPersonalPreferences', methods=['GET'])
@@ -997,9 +1005,37 @@ def get_teacher_personal_preferences():
         preferences_list = [{'teacher_name': pref.teacher_name, 'satisfactory_days_and_times': pref.satisfactory_days_and_times} for pref in teacher_preferences]
 
         # Return the list in JSON format
-        return jsonify(preferences_list), 200
+        return preferences_list
     except Exception as e:
         # In case of an exception, return an error message
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="Unexpected Error")
 
 
+@my_routes.route('/deleteTeachingActivityFromSchedule', methods=['POST', 'GET'])
+def delete_teaching_activity_from_schedule():
+    label = request.form.get('label')
+    try:
+        # Find the teaching activity by label
+        teaching_activity = TeachingActivity.query.filter_by(label=label).first()
+
+        if teaching_activity is None:
+            return render_template('views/admin/adminview.html',
+                               error="Room not found.")
+
+        # Delete associated schedule entries
+        Schedule.query.filter_by(teaching_activity_id=teaching_activity.id).delete()
+
+        db.session.commit()
+        return redirect('/deleteTeachingActivityFromScheduleReroute')
+    except NoResultFound:
+        db.session.rollback()
+        return render_template('views/admin/adminview.html', error='Teaching activity not found')
+    except ValueError as e:
+        db.session.rollback()
+        return render_template('views/admin/adminview.html', error=str(e))
+    except Exception as e:
+        db.session.rollback()
+        # Log the error for debugging
+        print(f"Unexpected error: {e}")
+        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")

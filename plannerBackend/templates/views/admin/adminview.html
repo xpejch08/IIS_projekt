@@ -59,6 +59,11 @@
 </head>
 <body>
   <div class="container">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+{% endif %}
     <div class="row">
       <div class="col-8">
         <h1>ADMIN MENU</h1>
@@ -137,6 +142,9 @@
       <p>Activities</p>
       <form id="guest" action="http://localhost:5000/addTeachingActivityInScheduleReroute" method="get">
         <input type="submit" class="btn btn-primary" value="Create an activity in the schedule" />
+      </form>
+      <form id="guest" action="http://localhost:5000/deleteTeachingActivityFromScheduleReroute" method="get">
+        <input type="submit" class="btn btn-primary" value="Delete an activity from the schedule" />
       </form>
     </div>
   </div>

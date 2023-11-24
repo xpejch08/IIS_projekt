@@ -55,6 +55,11 @@
 <body>
 
 <div class="container">
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+{% endif %}
   <h2>Create user</h2>
   <form id="userForm" action="http://localhost:5000/createUserAdmin" method="post">
     <div class="form-group">
