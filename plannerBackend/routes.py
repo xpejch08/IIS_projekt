@@ -115,6 +115,13 @@ def update_subject_reroute():
     return render_template('views/admin/admUpdateSubject.html', subjects=subject_list)
 
 
+@my_routes.route('/setSubjectGuarantorReroute', methods=['GET', 'POST'])
+def set_subject_guarantor_reroute():
+    subject_list = get_subjects()
+    guarantor_list = get_garants()
+    return render_template('views/admin/admSetGuarantorOfSubject.html', subjects=subject_list, guarantors=guarantor_list)
+
+
 @my_routes.route('/createSubjectReroute', methods=['GET', 'POST'])
 def create_subject_reroute():
     return render_template('views/admin/admAddSubject.html')
@@ -130,10 +137,12 @@ def create_teaching_activity_reroute():
     teaching_list = get_subjects()
     return render_template('views/admin/admAddTeachingActivity.html', activities=teaching_list)
 
+
 @my_routes.route('/deleteTeachingActivityReroute', methods=['GET', 'POST'])
 def delete_teaching_activity_reroute():
     teaching_list = get_teaching_activities()
     return render_template('views/admin/admDeleteTeachingActivity.html.html', teachers=teaching_list)
+
 
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
 def delete_user_reroute():
@@ -463,7 +472,7 @@ def delete_user_admin():
 ######################################################################################
 
 
-@my_routes.route('/setGuarantorOfSubject', methods=['PUT'])
+@my_routes.route('/setGuarantorOfSubject', methods=['POST'])
 def set_guarantor_of_subject():
     """
         Set or update the guarantor of a subject
@@ -493,9 +502,8 @@ def set_guarantor_of_subject():
           500:
             description: Internal server error
         """
-    data = request.get_json()
-    subject_shortcut = data.get('shortcut')
-    new_guarantor_name = data.get('guarantor_name')
+    subject_shortcut = request.form.get('shortcut')
+    new_guarantor_name = request.form.get('name')
 
     # Check if the subject exists
     subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
@@ -505,17 +513,19 @@ def set_guarantor_of_subject():
     # Check if the new guarantor exists
     new_guarantor = User.query.filter_by(name=new_guarantor_name).first()
     if not new_guarantor:
-        return jsonify({'error': 'New guarantor not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Subject doesn't exist. Please try again.")
 
     # Update the guarantor of the subject
     subject.guarantor_name = new_guarantor_name
 
     try:
         db.session.commit()
-        return jsonify({'success': 'Guarantor updated successfully'}), 200
+        return redirect('/setSubjectGuarantorReroute')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
 
 ######################################################################################
 
@@ -783,6 +793,22 @@ def get_teachers_and_garants():
     try:
         # Query all users
         users = User.query.filter(User.role.in_([2, 3])).all()
+
+        # Convert the list of user objects to a list of dictionaries
+        users_list = [user.as_dict() for user in users]
+
+        # Return the list in JSON format
+        return users_list
+    except Exception as e:
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
+
+
+@my_routes.route('/getGarants', methods=['GET'])
+def get_garants():
+    try:
+        # Query all users
+        users = User.query.filter(User.role.in_([2])).all()
 
         # Convert the list of user objects to a list of dictionaries
         users_list = [user.as_dict() for user in users]
