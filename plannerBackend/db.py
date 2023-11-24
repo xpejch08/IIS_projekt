@@ -26,7 +26,7 @@ class Subject(db.Model):
     name = db.Column(db.String(255), nullable=False)
     annotation = db.Column(db.Text)
     credits = db.Column(db.Integer)
-    guarantor_name = db.Column(db.String(255), db.ForeignKey('users.name'))
+    guarantor_name = db.Column(db.String(255), db.ForeignKey('users.name', onupdate='CASCADE', ondelete='CASCADE'))
 
     guarantor = db.relationship('User')
 
@@ -61,8 +61,8 @@ class Room(db.Model):
 
 class SubjectGuardians(db.Model):
     __tablename__ = 'subject_guardians'
-    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE'), primary_key=True)
-    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'), primary_key=True)
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
 
     # Relationships
     subject = db.relationship('Subject', backref=db.backref('subject_guardians', cascade='all, delete'))
@@ -75,7 +75,7 @@ class TeachingActivity(db.Model):
     label = db.Column(db.String(255))
     duration = db.Column(db.Integer)
     repetition = db.Column(db.String(255))
-    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut'))
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE', onupdate='CASCADE'))
 
     # Relationships
     schedules = db.relationship('Schedule', back_populates='teaching_activity')
@@ -95,9 +95,9 @@ class Schedule(db.Model):
     __tablename__ = 'schedule'
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    teaching_activity_id = db.Column(db.BigInteger, db.ForeignKey('teaching_activities.id'), nullable=False)
-    room_id = db.Column(db.BigInteger, db.ForeignKey('rooms.id'), nullable=False)
-    instructor_name = db.Column(db.String(255), db.ForeignKey('users.name'), nullable=False)
+    teaching_activity_id = db.Column(db.BigInteger, db.ForeignKey('teaching_activities.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
+    room_id = db.Column(db.BigInteger, db.ForeignKey('rooms.id', onupdate='CASCADE', ondelete='CASCADE'), nullable=False)
+    instructor_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
     day = db.Column(db.Integer, nullable=False)  # Assuming 'day' ranges from 0 to 6
     hour = db.Column(db.Integer, nullable=False)  # Assuming 'hour' ranges from 0 to 13
     repetition = db.Column(db.String(255))
@@ -122,14 +122,17 @@ class Course_Instructors(db.Model):
     __tablename__ = 'course_instructors'
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'))
-    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE'))
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE', onupdate='CASCADE'))
+    shortcut = db.Column(db.String(255), db.ForeignKey('subjects.shortcut', ondelete='CASCADE', onupdate='CASCADE'))
+
+    teacher = db.relationship('User', backref=db.backref('course_instructors', cascade='all, delete'))
+    subject = db.relationship('Subject', backref=db.backref('course_instructors', cascade='all, delete'))
 
 class Teacher_Personal_Preferences(db.Model):
     __tablename__ = 'teacher_personal_preferences'
 
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE'), primary_key=True)
+    teacher_name = db.Column(db.String(255), db.ForeignKey('users.name', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
     satisfactory_days_and_times = db.Column(db.Text)
 
     def as_dict(self):

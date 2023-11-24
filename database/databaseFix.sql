@@ -26,7 +26,7 @@ CREATE TABLE subjects (
     credits INT,
     guarantor_name VARCHAR(255),
     PRIMARY KEY (id),
-    FOREIGN KEY (guarantor_name) REFERENCES users (name) ON DELETE CASCADE
+    FOREIGN KEY (guarantor_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Teaching Activities Table
@@ -37,7 +37,7 @@ CREATE TABLE teaching_activities (
     repetition VARCHAR(255),
     shortcut VARCHAR(255),
     PRIMARY KEY (id),
-    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE
+    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Subject Guardians Table
@@ -45,8 +45,8 @@ CREATE TABLE subject_guardians (
     shortcut varchar(255),
     teacher_name VARCHAR(255),
     PRIMARY KEY (shortcut, teacher_name),
-    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE
+    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Course Instructors Table
@@ -54,8 +54,8 @@ CREATE TABLE course_instructors (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     teacher_name VARCHAR(255),
     shortcut varchar(255),
-    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE,
+    FOREIGN KEY (shortcut) REFERENCES subjects (shortcut) ON DELETE CASCADE ON UPDATE CASCADE ,
+    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE ,
     PRIMARY KEY (id)
 );
 
@@ -65,7 +65,7 @@ CREATE TABLE teacher_personal_preferences (
     teacher_name VARCHAR(255),
     satisfactory_days_and_times TEXT,
     PRIMARY KEY (id),
-    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE
+    FOREIGN KEY (teacher_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Schedule Table
@@ -80,9 +80,9 @@ CREATE TABLE schedule (
     check_room_collisions BOOLEAN,
     check_schedule_requests BOOLEAN,
     PRIMARY KEY (id),
-    FOREIGN KEY (teaching_activity_id) REFERENCES teaching_activities (id) ON DELETE CASCADE,
-    FOREIGN KEY (room_id) REFERENCES rooms (id) ON DELETE CASCADE,
-    FOREIGN KEY (instructor_name) REFERENCES users (name) ON DELETE CASCADE
+    FOREIGN KEY (teaching_activity_id) REFERENCES teaching_activities (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES rooms (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (instructor_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Personal Student Schedule Table
@@ -91,8 +91,8 @@ CREATE TABLE personal_student_schedule (
     student_name VARCHAR(255),
     teaching_activity_id BIGINT UNSIGNED,
     PRIMARY KEY (id),
-    FOREIGN KEY (student_name) REFERENCES users (name) ON DELETE CASCADE,
-    FOREIGN KEY (teaching_activity_id) REFERENCES teaching_activities (id) ON DELETE CASCADE
+    FOREIGN KEY (student_name) REFERENCES users (name) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (teaching_activity_id) REFERENCES teaching_activities (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO users (name, password, role) VALUES

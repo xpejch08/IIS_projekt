@@ -247,6 +247,7 @@ def delete_subject(shortcut):
 @my_routes.route('/updateSubject', methods=['POST', 'GET'])
 def update_subject():
     db.session.rollback()
+    new_shortcut = request.form.get('new_shortcut')
     old_shortcut = request.form.get('old_shortcut')
     annotation = request.form.get('annotation')
     name = request.form.get('name')
@@ -259,6 +260,8 @@ def update_subject():
         return render_template('views/admin/admUpdateSubject.html', error='Subject not found')
 
     try:
+        if new_shortcut:
+            subject.shortcut = new_shortcut
         if annotation:
             subject.annotation = annotation
         if credits:
