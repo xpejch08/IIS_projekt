@@ -41,7 +41,6 @@ packaging==23.2
 pyrsistent==0.20.0
 pytz==2023.3.post1
 requests-file==1.5.1
-six 1.16.0
 tldextract==5.1.0
 zope.event==5.0
 zope.interface==6.1
