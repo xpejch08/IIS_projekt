@@ -16,8 +16,8 @@
       <label for="name">Teacher name:</label>
       <!-- Updated the input to a dropdown/select list -->
       <select style="width: 300px;" class="form-control" id="name" required>
-        {% for room in rooms %}
-            <option value="{{ room.title }}">{{ room.title }}</option>
+        {% for teacher in teachers %}
+            <option value="{{ teacher.name }}">{{ teacher.name }}</option>
         {% endfor %}
       </select>
     </div>
@@ -25,8 +25,8 @@
       <label for="shortcut">Subject shortcut:</label>
       <!-- Updated the input to a dropdown/select list -->
       <select style="width: 300px;" class="form-control" id="shortcut" required>
-        {% for room in rooms %}
-            <option value="{{ room.title }}">{{ room.title }}</option>
+        {% for subject in subjects %}
+            <option value="{{ subject.shortcut }}">{{ subject.shortcut }}</option>
         {% endfor %}
       </select>
     </div>

@@ -130,6 +130,10 @@ def create_teaching_activity_reroute():
     teaching_list = get_subjects()
     return render_template('views/admin/admAddTeachingActivity.html', activities=teaching_list)
 
+@my_routes.route('/deleteTeachingActivityReroute', methods=['GET', 'POST'])
+def delete_teaching_activity_reroute():
+    teaching_list = get_teaching_activities()
+    return render_template('views/admin/admDeleteTeachingActivity.html.html', teachers=teaching_list)
 
 @my_routes.route('/deleteUserReroute', methods=['GET', 'POST'])
 def delete_user_reroute():
@@ -625,34 +629,36 @@ def delete_teaching_activity(label):
 
 @my_routes.route('/addTeacherToSubject', methods=['POST'])
 def add_teacher_to_subject():
-    data = request.get_json()
-    teacher_username = data['username']
-    subject_shortcut = data['shortcut']
+    name = request.form.get('name')
+    shortcut = request.form.get('subject_shortcut')
 
     # Check if the teacher exists
-    teacher = User.query.filter_by(name=teacher_username).first()
+    teacher = User.query.filter_by(name=name).first()
     if not teacher:
-        return jsonify({'error': 'Teacher not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Teacher doesn't exist. Please try again.")
 
     # Check if the subject exists
-    subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
+    subject = Subject.query.filter_by(shortcut=shortcut).first()
     if not subject:
-        return jsonify({'error': 'Subject not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Shortcut doesn't exist. Please try again.")
 
     # Create a new CourseInstructors object
     new_course_instructor = Course_Instructors(
-        teacher_name=teacher_username,
-        shortcut=subject_shortcut
+        teacher_name=name,
+        shortcut=shortcut
     )
 
     try:
         # Add the new object to the database
         db.session.add(new_course_instructor)
         db.session.commit()
-        return jsonify({'success': 'Teacher added to subject successfully'}), 201
+        return redirect('/createCourseInstructorReroute')
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return render_template('views/admin/adminview.html',
+                               error="Unexpected Error.")
 
 
 @my_routes.route('/deleteTeacherFromSubject', methods=['DELETE'])
