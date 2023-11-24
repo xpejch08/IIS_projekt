@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+    .vertical{
+
+    }
+    .horizont{
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    }
+    .timetable{
+        justify-self: right;
+        width: 1480px;
+        margin-left: 150px;
+        margin-top: 50px;
+        margin-right: 40px;
+
+        border: black solid 1px;
+        align-items: center;
+
+    }
+    .times{
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+
+        border: black solid 1px;
+        align-items: center;
+    }
+    .time{
+
+
+        border-left: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+
+    }
+    .dayname{
+
+        flex-direction: column;
+        justify-content: left;
+        border: black solid 1px;
+        width: 40px;
+
+        text-justify: auto;
+        text-align: center;
+    }
+    .activity{
+        padding: 2px;
+        border: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: white;
+
+    }
+    .info{
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+</style>
+</head>
+
+<body>
+
+<script>
+
+    var activity_list = {{ activities|tojson|safe }};
+    var schedule = {{ schedule|tojson|safe }};
+    $(document).ready(function() {
+        console.log(activity_list);
+        listActivities(activity_list);
+        drawTimetable(schedule);
+
+
+    });
+    function changeColor(element) {
+        var currentColor = element.style.backgroundColor;
+        // Change the color based on the current color
+        if (currentColor === 'lightgreen') {
+            element.style.backgroundColor = 'white';
+        } else {
+            element.style.backgroundColor = 'lightgreen';
+        }
+    }
+    function listActivities(activities){
+            activities.sort((a, b) => a.shortcut.localeCompare(b.shortcut));
+            var activitiesList = $("#activitiesList");
+            activities.forEach(activity => activitiesList.append("<li style='text-align: left'>" + activity.shortcut + ' - ' + activity.label + "</li>"));
+
+    }
+    function drawTimetable(schedule) {
+
+        for (activity in activities)
+            console.log(activity.shortcut);
+            span = [activity.hour];
+        for (let i = activity.hour; i <= activity.duration; i++)
+            span.append(i);
+            console.log("span:" + span);
+    }
+
+
+
+</script>
+
+<div class="horizont">
+    <div class="vertical">
+
+        <div style="padding-top: 20px">
+            <h1 style="margin-top:10px; margin-left: 10px ">Timetable</h1>
+            <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
+                <input type="submit" class="btn btn-secondary" value="Back to admin menu" />
+            </form>
+        </div>
+
+        <h3>All activities:</h3>
+        <br>
+        <ul id="activitiesList">
+
+        </ul>
+    </div>
+
+    <div class="timetable">
+
+        <div class="times">
+            <div id="Monday" class="dayname">:)</div>
+            <div class="time">7:00-8:00</div>
+            <div class="time">8:00-9:00</div>
+            <div class="time">9:00-10:00</div>
+            <div class="time">10:00-11:00</div>
+            <div class="time">11:00-12:00</div>
+            <div class="time">12:00-13:00</div>
+            <div class="time">13:00-14:00</div>
+            <div class="time">14:00-15:00</div>
+            <div class="time">15:00-16:00</div>
+        </div>
+        <div>
+            <div id="Monday" class="horizont">
+                <div class="dayname">Mo</div>
+                <div class="vertical">
+                    <div style="width: 320px" class="activity">
+                        <p class="info">CHEM101</p>
+                        <p class="info">laborky</p>
+                        <p class="info">Room: 201</p>
+                        <p class="info">Teacher: Armani Pandani</p>
+                    </div>
+                    <div onclick="changeColor(this)" style="margin-left: 160px" class="activity">
+                        <p class="info">prdeni</p>
+                        <p class="info">prdlavky</p>
+                        <p class="info">Room: 201</p>
+                        <p class="info">Teacher: Armani Pandani</p>
+                    </div>
+                </div>
+                <div>
+                    <div onclick="changeColor(this)" style="margin-left: 0px" class="activity">
+                        <p class="info">prdeni</p>
+                        <p class="info">prdlavky</p>
+                        <p class="info">Room: 201</p>
+                        <p class="info">Teacher: Armani Pandani</p>
+                    </div>
+                </div>
+            </div>
+            <div id="Tuesday" class="horizont">
+                <div class="dayname">Tu</div>
+                <div>2</div>
+            </div>
+            <div id="Wednesday" class="horizont">
+                <div class="dayname">We</div>
+                <div>3</div>
+            </div>
+            <div id="Thursday" class="horizont">
+                <div class="dayname">Th</div>
+                <div>4</div>
+            </div>
+            <div id="Friday" class="horizont">
+                <div class="dayname">Fr</div>
+                <div>5</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

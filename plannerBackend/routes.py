@@ -125,6 +125,12 @@ def admin_view_reroute():
     return render_template('views/admin/adminview.html')
 
 
+@my_routes.route('/studentViewReroute', methods=['GET', 'POST'])
+def student_view_reroute():
+    schedule = get_schedule()
+    activities = get_teaching_activities()
+    return render_template('views/studentview.html', schedule=schedule, activities=activities)
+
 @my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
 @login_required_guarantor
 def create_course_instructor_reroute():
