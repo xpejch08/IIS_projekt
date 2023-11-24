@@ -162,6 +162,22 @@ def delete_subject_reroute():
     return render_template('views/admin/admDeleteSubject.html', subjects=subject_list)
 
 
+@my_routes.route('/addTeachingActivityInScheduleReroute', methods=['GET', 'POST'])
+def add_teaching_activity_in_schedule_reroute():
+    activities_list = get_teaching_activities()
+    rooms_list = get_rooms()
+    instructors_list = get_course_instructors()
+    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, rooms=rooms_list, instructors=instructors_list)
+
+
+@my_routes.route('/getInstructorsForActivityReroute', methods=['GET', 'POST'])
+def get_instructor_for_activity_reroute():
+    rooms_list = get_rooms()
+    activities_list = get_teaching_activities()
+    instructors, activities = get_course_instructors_ta()
+    return render_template('views/admin/admAddActivityInSchedule.html',activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list)
+
+
 @my_routes.route('/getLogin')
 def get_login():
     # Check if a user is logged in
@@ -719,24 +735,26 @@ def define_preferences():
 
 @my_routes.route('/addActivityInSchedule', methods=['POST'])
 def add_activity_in_schedule():
-    data = request.get_json()
-    teaching_activity_label = data['teaching_activity_label']
-    room_title = data['room_title']
-    instructor_name = data['instructor_name']
-    day = data['day']  # assuming this is passed as a string
-    hour = data['hour']  # assuming this is passed as a string
-    repetition = data['repetition']
+
+    teaching_activity_label = request.form.get('picked_label')
+    room_title = request.form.get('room_title')
+    instructor_name = request.form.get('instructor_name')
+    day = request.form.get('day')  # assuming this is passed as a string
+    hour = request.form.get('hour')  # assuming this is passed as a string
+    repetition = request.form.get('repetition')
 
 
     # Find the teaching activity by label
     teaching_activity = TeachingActivity.query.filter_by(label=teaching_activity_label).first()
     if not teaching_activity:
-        return jsonify({'error': 'Teaching activity not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Teaching Activity not found.")
 
     # Find the room by title
     room = Room.query.filter_by(title=room_title).first()
     if not room:
-        return jsonify({'error': 'Room not found'}), 404
+        return render_template('views/admin/adminview.html',
+                               error="Room not found.")
 
     # Create new schedule entry
     new_schedule_entry = Schedule(
@@ -752,7 +770,7 @@ def add_activity_in_schedule():
     try:
         db.session.add(new_schedule_entry)
         db.session.commit()
-        return jsonify({'success': 'Activity added to schedule successfully'}), 201
+        return redirect('/addTeachingActivityInScheduleReroute')
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
@@ -760,13 +778,32 @@ def add_activity_in_schedule():
 
 @my_routes.route('/getSchedule', methods=['GET'])
 def get_schedule():
-    # Query all schedule entries
-    schedule_entries = Schedule.query.all()
+    try:
+        # Query all schedule entries with related room and teaching activity details
+        schedule_entries = Schedule.query.join(Room, Schedule.room_id == Room.id).join(TeachingActivity, Schedule.teaching_activity_id == TeachingActivity.id).all()
 
-    # Convert the schedule entries to a JSON-friendly format
-    schedule_list = [entry.as_dict() for entry in schedule_entries]
+        # Convert the schedule entries to a JSON-friendly format with room and teaching activity names
+        schedule_list = []
+        for entry in schedule_entries:
+            schedule_dict = {
+                'id': entry.id,
+                'room_name': entry.room.title if entry.room else 'N/A',
+                'teaching_activity_name': entry.teaching_activity.label if entry.teaching_activity else 'N/A',
+                'instructor_name': entry.instructor_name,
+                'day': entry.day,
+                'hour': entry.hour,
+                'repetition': entry.teaching_activity.repetition if entry.teaching_activity else 'N/A',
+                # include other fields as needed
+            }
+            schedule_list.append(schedule_dict)
+            print(schedule_list)
 
-    return jsonify(schedule_list), 200
+        return schedule_list
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('views/admin/adminview.html',
+                               error="An unexpected error occurred. Please try again.")
+
 
 
 @my_routes.route('/getUsers', methods=['GET'])
@@ -781,7 +818,6 @@ def get_users():
         # Return the list in JSON format
         return users_list
     except Exception as e:
-        #todo fix error
         return render_template('views/admin/adminview.html',
                                error="An unexpected error occurred. Please try again.")
 
@@ -870,17 +906,38 @@ def get_teaching_activities():
 ##getCourseInstructors
 
 
-@my_routes.route('/getCourseInstructors', methods=['GET'])
+@my_routes.route('/getCourseInstructors', methods=['GET', 'POST'])
 def get_course_instructors():
     try:
         # Query all course instructors from the database
         course_instructors = Course_Instructors.query.all()
 
         # Convert the list of Course_Instructors objects to a list of dictionaries
-        instructors_list = [{'teacher_name': instructor.teacher_name, 'shortcut': instructor.shortcut} for instructor in course_instructors]
+        instructors_list = [instructor.as_dict() for instructor in course_instructors]
 
         # Return the list in JSON format
         return instructors_list
+    except Exception as e:
+        # In case of an exception, return an error message
+        return jsonify({'error': str(e)}), 500
+
+
+@my_routes.route('/getCourseInstructorsTa', methods=['POST', 'GET'])
+def get_course_instructors_ta():
+    try:
+        label_req = request.form.get('teaching_activity')
+        activity = TeachingActivity.query.filter_by(label=label_req).first()
+        # Query course instructors for a specific subject
+
+        course_instructors = Course_Instructors.query.filter_by(shortcut=activity.shortcut).all()
+        activities = TeachingActivity.query.filter_by(label=label_req).all()
+
+        # Convert the list of Course_Instructors objects to a list of dictionaries
+        instructors_list = [{'teacher_name': instructor.teacher_name, 'shortcut': instructor.shortcut} for instructor in course_instructors]
+        activity_list = [{'label': activity.label, 'duration': activity.duration, 'repetition': activity.repetition, 'shortcut': activity.shortcut} for activity in activities]
+
+        # Return the list in JSON format
+        return instructors_list, activity_list
     except Exception as e:
         # In case of an exception, return an error message
         return jsonify({'error': str(e)}), 500

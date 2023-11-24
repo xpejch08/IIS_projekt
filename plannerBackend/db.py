@@ -128,6 +128,13 @@ class Course_Instructors(db.Model):
     teacher = db.relationship('User', backref=db.backref('course_instructors', cascade='all, delete'))
     subject = db.relationship('Subject', backref=db.backref('course_instructors', cascade='all, delete'))
 
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'teacher_name': self.teacher_name,
+            'shortcut': self.shortcut,
+        }
+
 class Teacher_Personal_Preferences(db.Model):
     __tablename__ = 'teacher_personal_preferences'
 
