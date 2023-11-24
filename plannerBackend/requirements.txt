@@ -44,4 +44,3 @@ requests-file==1.5.1
 tldextract==5.1.0
 zope.event==5.0
 zope.interface==6.1
-```
