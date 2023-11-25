@@ -743,7 +743,7 @@ def delete_teacher_from_subject():
             db.session.delete(matching_entry)
             db.session.commit()
             # Redirect or render success page/template
-            return redirect('/deleteTeacherFromSubjectReroute')
+            return redirect('/deleteCourseInstructorReroute')
         else:
             # If no matching entry is found, display an error
             return render_template('views/admin/admDeleteTeacherFromSubject.html', error='Teacher/subject not found')

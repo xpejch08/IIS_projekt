@@ -17,7 +17,7 @@
     .timetable{
         justify-self: right;
         width: 1480px;
-        margin-left: 150px;
+        margin-left: 10px;
         margin-top: 50px;
         margin-right: 40px;
 
@@ -29,7 +29,7 @@
         display: flex;
         flex-direction: row;
         justify-content: left;
-
+        background-color: #007bff;
         border: black solid 1px;
         align-items: center;
     }
@@ -99,38 +99,47 @@
             activities.forEach(activity => activitiesList.append("<li style='text-align: left'>" + activity.shortcut + ' - ' + activity.label + "</li>"));
 
     }
+    function findSpan(hour,duration){
+        console.log(hour,duration);
+        let span = [];
+        for(let i=hour; i<hour+duration; i++){
+			span.push(i)
+        }
+        return span;
+
+    }
     function updateActivities(schedule, activities,rooms) {
-        console.log("drawTimetable");
-        console.log(schedule);
-        console.log(activities);
-        console.log(rooms);
+        console.log("updateActivities");
+        let removeactivitieslist =[];
         for (let act of activities) {
+            var foundMatch = false;
             for (let sch of schedule) {
                 if (sch.teaching_activity_name === act.label) {
-                    act.hour = "pero";
-                    console.log(act.hour);
-                    console.log(sch.hour);
                     act.hour = sch.hour;
                     act.day = sch.day;
                     act.instructor_name = sch.instructor_name;
                     for (let rm of rooms){
                         if (rm.title === sch.room_name) {
                             act.room = rm.title;
+                            foundMatch = true;
+                            act.span=findSpan(act.hour,act.duration)
                         }
                     }
                 }
             }
+            if (!foundMatch) {
+                removeactivitieslist.push(act);
+            }
 
         }
+        for (let act of removeactivitieslist){
+            activities.splice(activities.indexOf(act),1);
+        }
+
         console.log(activities);
-
-
-        for (activity in activities)
-            console.log(activity.shortcut);
-            span = [activity.hour];
-        for (let i = activity.hour; i <= activity.duration; i++)
-            span.append(i);
-            console.log("span:" + span);
+        for (let act of activities){
+            console.log(act.shortcut);
+        }
     }
 
 
@@ -170,7 +179,7 @@
         </div>
         <div>
             <div id="Monday" class="horizont">
-                <div class="dayname">Mo</div>
+                <div class="dayname" style="background-color: indianred">Mo</div>
                 <div class="vertical">
                     <div style="width: 320px" class="activity">
                         <p class="info">CHEM101</p>
@@ -195,19 +204,19 @@
                 </div>
             </div>
             <div id="Tuesday" class="horizont">
-                <div class="dayname">Tu</div>
+                <div class="dayname" style="background-color: cornflowerblue ">Tu</div>
                 <div>2</div>
             </div>
             <div id="Wednesday" class="horizont">
-                <div class="dayname">We</div>
+                <div class="dayname" style="background-color: darkgoldenrod">We</div>
                 <div>3</div>
             </div>
             <div id="Thursday" class="horizont">
-                <div class="dayname">Th</div>
+                <div class="dayname" style="background-color: olivedrab">Th</div>
                 <div>4</div>
             </div>
             <div id="Friday" class="horizont">
-                <div class="dayname">Fr</div>
+                <div class="dayname" style="background-color: wheat" >Fr</div>
                 <div>5</div>
             </div>
         </div>
