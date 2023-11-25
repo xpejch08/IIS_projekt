@@ -1,100 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rozvrchol</title>
-<!-- Include Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin-top: 50px;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .form-container {
+      max-width: 50%;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-top: 50px;
+    }
+
+    .label {
+      width: 100%;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+
+  <div class="container">
     {% if error %}
-        <div class="alert alert-danger">
-            {{ error }}
-        </div>
+      <div class="alert alert-danger">
+        {{ error }}
+      </div>
     {% endif %}
-  <h2>Add activity in schedule</h2>
-    <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
-      <div class="form-group">
-        <label for="teaching_activity_label">Pick a teaching activity:</label>
-        <select class="form-control" id="teaching_activity_label" name="teaching_activity"  required onchange="this.form.submit()">
+
+    <h2>CREATE AN ACTIVITY IN THE SCHEDULE</h2>
+    <div class="form-container">
+      <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
+        <div class="form-group">
+          <label class="label" for="teaching_activity_label">Choose an activity</label>
+          <select class="form-control" id="teaching_activity_label" name="teaching_activity" required onchange="this.form.submit()">
             <option value="" selected>-- Select an option --</option>
             {% for activity in activities %}
-                <option value="{{ activity.label }}">{{ activity.label }}</option>
+              <option value="{{ activity.label }}">{{ activity.label }}</option>
             {% endfor %}
-        </select>
-      </div>
-    </form>
-  <form id="addActivityInSchedule" action="http://localhost:5000/addActivityInSchedule" method="post">
+          </select>
+        </div>
+      </form>
+
+      <form id="addActivityInSchedule" action="http://localhost:5000/addActivityInSchedule" method="post">
+        <div class="form-group">
+          <label class="label" for="picked_label">Selected activity</label>
+          <select class="form-control" id="picked_label" name="picked_label">
+            {% for picked_activity in picked_activities %}
+              <option value="{{ picked_activity.label }}">{{ picked_activity.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="label" for="room_title">Choose a room</label>
+          <select class="form-control" id="room_title" name="room_title" required>
+            {% for room in rooms %}
+              <option value="{{ room.title }}">{{ room.title }}</option>
+            {% endfor %}
+          </select>
+        </div> 
+        <div class="form-group">
+          <label class="label" for="instructor_name">Choose an instructor</label>
+          <select class="form-control" id="instructor_name" name="instructor_name" required>
+            {% for instructor in instructors %}
+              <option value="{{ instructor.teacher_name }}">{{ instructor.teacher_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="label" for="day">Choose a day</label>
+          <input type="number" class="form-control" id="day" name="day" min="1" max="5" required>
+        </div>
+        <div class="form-group">
+          <label class="label" for="hour">Choose an hour</label>
+          <input type="number" class="form-control" id="hour" name="hour" min="0" max="9" required>
+        </div>
+        <div class="form-group">
+          <label class="label" for="repetition">Choose a repetition</label>
+          <select class="form-control" id="repetition" name="repetition" required>
+            <option value="every week">every week</option>
+            <option value="even weeks">even weeks</option>
+            <option value="odd weeks">odd weeks</option>
+            <option value="one time">one-time</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create an activity in the schedule</button>
+      </form>
+
       <div class="form-group">
-      <label for="picked_label">Activity to be added:</label>
-      <select class="form-control" id="picked_label" name="picked_label" style="appearance: none">
-          {% for picked_activity in picked_activities %}
-            <option value="{{ picked_activity.label }}">{{ picked_activity.label }}</option>
-          {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-      <label for="room_title">Room:</label>
-      <select class="form-control" id="room_title" name="room_title" required>
-          {% for room in rooms %}
-            <option value="{{ room.title }}">{{ room.title }}</option>
-          {% endfor %}
-        </select>
-    </div> 
-    <div class="form-group">
-        <label for="instructor_name">Instructor:</label>
-        <select class="form-control" id="instructor_name" name="instructor_name" required>
-          {% for instructor in instructors %}
-            <option value="{{ instructor.teacher_name }}">{{ instructor.teacher_name }}</option>
-          {% endfor %}
-        </select>
+        <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
+          <input type="submit" class="btn btn-secondary btn-block"value="Back to the administrator menu"/>
+        </form>
       </div>
-    <div class="form-group">
-      <label for="day">Day:</label>
-      <input style="width: 300px;" type="number" class="form-control" id="day" name="day" min="1" max="5" required>
-    </div>
-    <div class="form-group">
-        <label for="hour">Hour:</label>
-        <input style="width: 300px;" type="number" class="form-control" id="hour" name="hour" min="0" max="9" required>
-    </div>
-    <div class="form-group">
-        <label for="repetition">Repetition:</label>
-        <select class="form-control" id="repetition" name="repetition" style="width: 300px;" required>
-            <option value="every week">Every week</option>
-            <option value="odd weeks">Odd weeks</option>
-            <option value="even weeks">Even weeks</option>
-            <option value="one time">One time</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Add to schedule</button>
-    
-  </form>
-  <div style="padding-top: 20px">
-    <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
-      <input type="submit" class="btn btn-secondary"value="Back to admin menu" />
-    </form>
-  </div>
-  <!-- Modal #########################################################################################################-->
-  <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
+
+      <!-- Modal -->
+      <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Message</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+              <h5 class="modal-title" id="modalTitle">Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
             <div class="modal-body" id="modalContent">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-</div>
+  </div>
 
 </body>
 </html>
