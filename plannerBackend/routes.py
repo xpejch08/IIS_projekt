@@ -240,7 +240,8 @@ def add_teaching_activity_in_schedule_reroute():
     activities_list = get_teaching_activities()
     rooms_list = get_rooms()
     instructors_list = get_course_instructors()
-    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, rooms=rooms_list, instructors=instructors_list)
+    schedule = get_schedule()
+    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, rooms=rooms_list, instructors=instructors_list, schedule=schedule)
 
 
 @my_routes.route('/getInstructorsForActivityReroute', methods=['GET', 'POST'])
@@ -248,7 +249,8 @@ def get_instructor_for_activity_reroute():
     rooms_list = get_rooms()
     activities_list = get_teaching_activities()
     instructors, activities = get_course_instructors_ta()
-    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list)
+    schedule = get_schedule()
+    return render_template('views/admin/admAddActivityInSchedule.html', activities=activities_list, instructors=instructors, picked_activities=activities, rooms=rooms_list, schedule=schedule)
 
 
 @my_routes.route('/getInstructorsForCourseReroute', methods=['GET', 'POST'])
