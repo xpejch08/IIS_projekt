@@ -102,7 +102,7 @@ INSERT INTO users (name, password, role) VALUES
     ('teacher', 'admin', 3),    -- Assuming 3 represents 'vyučující'
     ('room', 'admin', 4),          -- Assuming 4 represents 'rozvrhář'
     ('student', 'admin', 5);    -- Assuming 5 represents 'student'
-
+--in the actual used database, the passwords are hashed and the users were created through the web interface
 
 INSERT INTO rooms (title, capacity) VALUES
     ('Room A', 30),
@@ -122,7 +122,7 @@ INSERT INTO subjects (shortcut, name, annotation, credits, guarantor_name) VALUE
 INSERT INTO teaching_activities (label, duration, repetition, shortcut, preference) VALUES
     ('Lecture 1', 90, 'every week', 'MATH101', 'want windows'),
     ('Lab 1', 120, 'every week', 'PHYS101', 'atleast 50 chairs'),
-    ('Seminar 1', 90, 'odd weeks', 'CHEM101', 'skibidi toilet');
+    ('Seminar 1', 90, 'odd weeks', 'CHEM101', 'toilets nearby');
 
 -- Insert test data into the subject_guardians table
 -- The values for id_subject and id_teacher must correspond to the subject name and teacher name
@@ -148,8 +148,8 @@ INSERT INTO teacher_personal_preferences (teacher_name, satisfactory_days_and_ti
 -- Assuming these values still refer to the auto-generated IDs for teaching_activities, rooms, and users tables
 INSERT INTO schedule (teaching_activity_id, room_id, instructor_name, day, hour, repetition, check_room_collisions, check_schedule_requests) VALUES
     (1, 1, 'teacher', '1', '2', 'weekly',false, true),
-    (2, 2, 'teacher', '2','3', 'daily',false, true),
-    (3, 3, 'teacher', '3', '8', 'every odd week',false, true);
+    (2, 2, 'teacher', '2','3', 'even weeks',false, true),
+    (3, 3, 'teacher', '3', '8', 'odd weeks',false, true);
 
 -- Insert test data into the personal_student_schedule table
 -- The value for id_user must correspond to the user's name
