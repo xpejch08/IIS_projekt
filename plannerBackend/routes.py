@@ -18,7 +18,7 @@ def login_required_admin(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("user_id") or session.get("user_role") != 1:
-            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -27,7 +27,7 @@ def login_required_teacher(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("user_id") or session.get("user_role") != 1 and session.get("user_role") != 3 and session.get("user_role") != 2:
-            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -35,8 +35,8 @@ def login_required_teacher(f):
 def login_required_scheduler(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("user_id") or session.get("user_role") != 1:
-            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        if not session.get("user_id") or session.get("user_role") != 1 and session.get("user_role") != 4:
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -45,7 +45,7 @@ def login_required_guarantor(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("user_id") or session.get("user_role") != 1 and session.get("user_role") != 2:
-            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -53,8 +53,8 @@ def login_required_guarantor(f):
 def login_required_student(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("user_id") or session.get("user_role") != 5:
-            return render_template('views/admin/adminview.html', error='You are unauthorized.')
+        if not session.get("user_id") or session.get("user_role") != 5 and session.get("user_role") != 1:
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error='You are unauthorized.')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -291,7 +291,7 @@ def get_course_instructors_subject():
         return instructors_list, subjects_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html', error="Unexpected Error")
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error="Unexpected Error")
 
 
 @my_routes.route('/logout', methods=['GET', 'POST'])
@@ -467,7 +467,7 @@ def create_user_admin():
     try:
         user = User.query.filter_by(name=name).first()
         if user is not None:
-            return render_template('views/admin/adminview.html', error="This user already exists. Please use a different name.")
+            return render_template('views/admin/adminview.html',role=session.get('user_role'), error="This user already exists. Please use a different name.")
         new_user = User(
             name=name,
             password=generate_password_hash(password),
@@ -481,7 +481,7 @@ def create_user_admin():
     except Exception as e:
         db.session.rollback()
         # For other types of errors, handle them appropriately
-        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/updateUserAdmin', methods=['POST', 'GET'])
@@ -565,13 +565,13 @@ def set_guarantor_of_subject():
     # Check if the subject exists
     subject = Subject.query.filter_by(shortcut=subject_shortcut).first()
     if not subject:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Shortcut doesn't exist. Please try again.")
 
     # Check if the new guarantor exists
     new_guarantor = User.query.filter_by(name=new_guarantor_name).first()
     if not new_guarantor:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Subject doesn't exist. Please try again.")
 
     # Update the guarantor of the subject
@@ -582,7 +582,7 @@ def set_guarantor_of_subject():
         return redirect('/setSubjectGuarantorReroute')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 ######################################################################################
@@ -638,7 +638,7 @@ def add_teaching_activity():
     try:
         querry = Subject.query.filter_by(shortcut=shortcut).first()
         if querry is None:
-            return render_template('views/admin/adminview.html',
+            return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                    error="Subject doesn't exist. Please try again.")
 
         new_teaching_activity = TeachingActivity(
@@ -654,7 +654,7 @@ def add_teaching_activity():
         return redirect('/createTeachingActivityReroute')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -702,13 +702,13 @@ def add_teacher_to_subject():
     # Check if the teacher exists
     teacher = User.query.filter_by(name=name).first()
     if not teacher:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Teacher doesn't exist. Please try again.")
 
     # Check if the subject exists
     subject = Subject.query.filter_by(shortcut=shortcut).first()
     if not subject:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Shortcut doesn't exist. Please try again.")
 
     query = Course_Instructors.query.filter_by(teacher_name=name).all()
@@ -717,7 +717,7 @@ def add_teacher_to_subject():
     matching_entry = next((entry for entry in query if entry.shortcut == shortcut), None)
     # Create a new CourseInstructors object
     if matching_entry:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="This teacher is already assigned to this subject.")
     new_course_instructor = Course_Instructors(
         teacher_name=name,
@@ -731,7 +731,7 @@ def add_teacher_to_subject():
         return redirect('/createCourseInstructorReroute')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Unexpected Error.")
 
 
@@ -761,7 +761,7 @@ def delete_teacher_from_subject():
         # Handle any exceptions
         db.session.rollback()
         print(f"Unexpected error: {e}")  # Log the error for debugging
-        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error="An unexpected error occurred. Please try again.")
 
 
 @my_routes.route('/definePreferences', methods=['POST'])
@@ -786,7 +786,7 @@ def define_preferences():
         return redirect('/setTeacherPreferencesReroute')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -804,13 +804,13 @@ def add_activity_in_schedule():
     # Find the teaching activity by label
     teaching_activity = TeachingActivity.query.filter_by(label=teaching_activity_label).first()
     if not teaching_activity:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Teaching Activity not found.")
 
     # Find the room by title
     room = Room.query.filter_by(title=room_title).first()
     if not room:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Room not found.")
 
     # Create new schedule entry
@@ -830,7 +830,7 @@ def add_activity_in_schedule():
         return redirect('/addTeachingActivityInScheduleReroute')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -859,7 +859,7 @@ def get_schedule():
         return schedule_list
     except Exception as e:
         print(f"Error: {e}")
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -876,7 +876,7 @@ def get_users():
         # Return the list in JSON format
         return users_list
     except Exception as e:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 @my_routes.route('/getTeachersAndGarants', methods=['GET'])
@@ -891,7 +891,7 @@ def get_teachers_and_garants():
         # Return the list in JSON format
         return users_list
     except Exception as e:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -907,7 +907,7 @@ def get_garants():
         # Return the list in JSON format
         return users_list
     except Exception as e:
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -924,7 +924,7 @@ def get_subjects():
         return subjects_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -941,7 +941,7 @@ def get_rooms():
         return rooms_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -958,7 +958,7 @@ def get_teaching_activities():
         return teaching_activities_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 ##getCourseInstructors
@@ -977,7 +977,7 @@ def get_course_instructors():
         return instructors_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="An unexpected error occurred. Please try again.")
 
 
@@ -999,7 +999,7 @@ def get_course_instructors_ta():
         return instructors_list, activity_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Unexpected Error")
 
 
@@ -1017,7 +1017,7 @@ def get_subject_guardians():
         return guardians_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Unexpected Error")
 
 
@@ -1034,7 +1034,7 @@ def get_teacher_personal_preferences():
         return preferences_list
     except Exception as e:
         # In case of an exception, return an error message
-        return render_template('views/admin/adminview.html',
+        return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Unexpected Error")
 
 
@@ -1046,7 +1046,7 @@ def delete_teaching_activity_from_schedule():
         teaching_activity = TeachingActivity.query.filter_by(label=label).first()
 
         if teaching_activity is None:
-            return render_template('views/admin/adminview.html',
+            return render_template('views/admin/adminview.html',role=session.get('user_role'),
                                error="Room not found.")
 
         # Delete associated schedule entries
@@ -1056,12 +1056,12 @@ def delete_teaching_activity_from_schedule():
         return redirect('/deleteTeachingActivityFromScheduleReroute')
     except NoResultFound:
         db.session.rollback()
-        return render_template('views/admin/adminview.html', error='Teaching activity not found')
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error='Teaching activity not found')
     except ValueError as e:
         db.session.rollback()
-        return render_template('views/admin/adminview.html', error=str(e))
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error=str(e))
     except Exception as e:
         db.session.rollback()
         # Log the error for debugging
         print(f"Unexpected error: {e}")
-        return render_template('views/admin/adminview.html', error="An unexpected error occurred. Please try again.")
+        return render_template('views/admin/adminview.html',role=session.get('user_role'), error="An unexpected error occurred. Please try again.")
