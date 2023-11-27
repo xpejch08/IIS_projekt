@@ -52,15 +52,31 @@
 <p>Pøilo¾te odkaz na komentované video demostrující pou¾ití informaèního systému. Zamìøte se na pøípady u¾ití definované zadáním (napø. registrace u¾ivatele, správa u¾ivatelù a èinnosti jednotlivých rolí). Video nahrajte napøíklad na VUT Google Drive, kde ho bude mo¾né pøímo spustit z odkazu.</p>
 
 <h2>Implementace</h2>
-<p>Jako nástroj pro backend jsme zvolili python framework flask. V¹echny backendové routy jsou implementovány v souboru routes.py. Model databáze, byl vytoøen pomocí MySql. Abychom mohli s databází komunikovat pou¾íváme sqlAlchemy a model databáze implementovaný v souboru db.py.  Základní konfigurace flask aplikace je v souboru backend.py</p>
+<p>Jako nástroj pro backend jsme zvolili python framework flask. V¹echny backendové routy jsou implementovány v souboru routes.py.
+	Model databáze, byl vytoøen pomocí MySql. Abychom mohli s databází komunikovat pou¾íváme sqlAlchemy modul z pythonu tedy model databáze implementovaný v souboru db.py.
+	Základní konfigurace flask aplikace je v souboru backend.py. V soboru backend.py také probíhá inicializace databáze.
+	Soubor routes je rozdìlen na rerouts, wrappers a routes. Rerouts jsou routy pou¾ívané pro pøesmìrování. Wrappery jsou pou¾ívány pro kontrolu pøihlá¹ených u¾ivatelù.
+	Pomocí flask session kontrolujeme zda má u¾ivatel pøístup k urèité stránce, pokud ne, je pøesmìrován na menu stránku, kde je ohlá¹en error.
+	Zbylé routes slou¾í pro reálnou funkci informaèního systému. Komunikují s databází a získávají z ní data, která jsou následnì zobrazena na frontendu.
+	Slou¾í napøíklad pro vytváøení záznamù, jejich editaci, mazání, nebo zobrazení. Pro interaktivní a realtime frontend jsme vyu¾ili modul Jinja2,
+	který slou¾í napøíklad pro práci s promìnnými poslaných z backendu. Pro to aby informaèní systém byl bezpeèný, v¹echny hesla jsou pøi vytvoøení úètu
+	hashovány pomocí modulu werkzeug.security. Session také není permanentní a po uplynutí urèitého èasu vypr¹í.
+</p>
 
 <h3>Databáze</h3>
 
-Zde vlo¾te grafické schéma relaèní databáze (tabulek v databázi).
+<img src="ER2.jpg" alt="Database entity relationship diagram">
 
 <h2>Instalace</h2>
 
-Struènì popi¹te:
+Pro instalaci staèí rozbalit adresáø a v nìm pomocí nástroje pip naistalovat potøebné moduly pro bìh aplikace. Pokud nemáte na zaøízení
+pip nainstalován, mù¾ete tak docílit takto: $ sudo apt install python3-pip	#python 3.
+Potøebné moduly mù¾ete nainstalovat pomocí pøíkazu $ pip install -r requirements.txt. Následnì je potøeba nainstalovat python. Pro vývoj byl pou¾it python 3.10.
+Pokud jsou tyto podmínky splnìny staèí pou¾ít pøíkaz python backend.py a aplikace by mìla být spu¹tìna na localhostu na portu 5000.
+Databáze je permanentnì ulo¾ena na serveru a není potøeba ji inicializovat. Databázi jsme konfigurovali a inicializovali pomocí souboru
+databaseFix.sql v adres85i database. Pomocí souboru delete.sql se databáze sma¾e. Databá¾e be¾í pomocí slu¾by aiven.io. Pokud se chcete k databázi pøihlásit napøíklad
+pomocí nástroje datagrip, mù¾ete k tomu vyu¾ít tyto pøihla¹ovací údaje.
+<img src="database.png" alt="database authentication details">
 <ul>
 <li>postup instalace na server,</li>
 <li>softwarové po¾adavky (verze PHP apod.),</li>
