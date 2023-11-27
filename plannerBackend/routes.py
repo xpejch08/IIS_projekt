@@ -139,6 +139,7 @@ def info_view_reroute():
     subjects=get_subjects()
     return render_template('info.html', schedule=schedule, activities=activities, rooms=rooms, subjects=subjects)
 
+
 @my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
 @login_required_guarantor
 def create_course_instructor_reroute():
