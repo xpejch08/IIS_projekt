@@ -115,14 +115,14 @@ def login():
         session['user_id'] = user.id
         session['user_name'] = user.name
         session['user_role'] = user.role
-        return render_template('views/admin/adminview.html')
+        return render_template('views/admin/adminview.html', role=session.get('user_role'))
     else:
         return 'Invalid username or password', 401
 
 
 @my_routes.route('/admViewReroute', methods=['GET', 'POST'])
 def admin_view_reroute():
-    return render_template('views/admin/adminview.html')
+    return render_template('views/admin/adminview.html', role=session.get('user_role'))
 
 
 @my_routes.route('/studentViewReroute', methods=['GET', 'POST'])
