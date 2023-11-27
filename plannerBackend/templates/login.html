@@ -60,6 +60,11 @@
 <body>
 
   <div class="container">
+      {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+      {% endif %}
     <h2>LOG IN</h2>
     <div class="form-container">
       <form id="userForm" action="http://localhost:5000/login" method="post">
