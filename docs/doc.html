@@ -25,7 +25,7 @@
 	</dd>
 	<dd>Ondřej Češka <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
 	    <a href="mailto:xceska07@stud.fit.vutbr.cz">xceska07@stud.fit.vutbr.cz</a> -
-		popis činnosti v týmu
+		Implementace frontendu, dynamický rozvrh, komunikace FE a BE.
 	</dd>
 	<dd>David Kvaček <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
 	    <a href="mailto:xkvace00@stud.fit.vutbr.cz">xkvace00@stud.fit.vutbr.cz</a> -
@@ -44,8 +44,6 @@
 <tr><td>timetabler</td><td>timetabler</td><td>rozvrhář</td></tr>
 <tr><td>student</td><td>student</td><td>student</td></tr>
 </table>
-
-<p>(Diagram případů užití není nutné vkládat, pokud IS implementuje role a případy užití definované zadáním.)</p> 
 
 <h3>Video</h3>
 
@@ -71,10 +69,11 @@
 
 Pro instalaci stačí rozbalit adresář a v něm pomocí nástroje pip naistalovat potřebné moduly pro běh aplikace. Pokud nemáte na zařízení
 pip nainstalován, můžete tak docílit takto: $ sudo apt install python3-pip	#python 3.
-Potřebné moduly můžete nainstalovat pomocí příkazu $ pip install -r requirements.txt. Následně je potřeba nainstalovat python. Pro vývoj byl použit python 3.10.
-Pokud jsou tyto podmínky splněny stačí použít příkaz python backend.py a aplikace by měla být spuštěna na localhostu na portu 5000.
+Potřebné moduly můžete nainstalovat pomocí příkazu $ pip install -r requirements.txt. Pro vývoj byl použit python 3.10.
+Pokud jsou tyto podmínky splněny, stačí použít příkaz python backend.py a aplikace by měla být spuštěna na localhostu na portu 5000.
+Úvodní stránka aplikace s názvem index.html se nachází v adresáři plannerBackend/templates. Z této obrazovky se uživatel může zaregistrovat nebo přihlásit a následně je schopen používat aplikaci.
 Databáze je permanentně uložena na serveru a není potřeba ji inicializovat. Databázi jsme konfigurovali a inicializovali pomocí souboru
-databaseFix.sql v adres85i database. Pomocí souboru delete.sql se databáze smaže. Databáže beží pomocí služby aiven.io. Pokud se chcete k databázi přihlásit například
+databaseFix.sql v adresáři database. Pomocí souboru delete.sql se databáze smaže. Databáže beží pomocí služby aiven.io. Pokud se chcete k databázi přihlásit například
 pomocí nástroje datagrip, můžete k tomu využít tyto přihlašovací údaje.
 <img src="database.png" alt="database authentication details">
 <ul>
