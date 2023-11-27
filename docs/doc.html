@@ -47,7 +47,7 @@
 
 <h3>Video</h3>
 
-<p>Přiložte odkaz na komentované video demostrující použití informačního systému. Zaměřte se na případy užití definované zadáním (např. registrace uživatele, správa uživatelů a činnosti jednotlivých rolí). Video nahrajte například na VUT Google Drive, kde ho bude možné přímo spustit z odkazu.</p> 
+<dd><a href="https://www.youtube.com/watch?v=ttp6LtFSmT0">https://www.youtube.com/watch?v=ttp6LtFSmT0</a></dd>
 
 <h2>Implementace</h2>
 <p>Jako nástroj pro backend jsme zvolili Python framework Flask. Všechny backend routy jsou implementovány v souboru routes.py.
@@ -63,7 +63,7 @@
 
 <h3>Databáze</h3>
 
-<img src="ER2.jpg" alt="Database entity relationship diagram">
+<img src="ER.jpg" alt="Database entity relationship diagram">
 
 <h2>Instalace</h2>
 
@@ -74,8 +74,45 @@ Pokud jsou tyto podmínky splněny, stačí použít příkaz python backend.py 
 Úvodní stránka aplikace s názvem index.html se nachází v adresáři plannerBackend/templates. Z této obrazovky se uživatel může zaregistrovat nebo přihlásit a následně je schopen používat aplikaci.
 Databáze je permanentně uložena na serveru a není potřeba ji inicializovat. Databázi jsme konfigurovali a inicializovali pomocí souboru
 databaseFix.sql v adresáři database. Pomocí souboru delete.sql se databáze smaže. Databáže beží pomocí služby aiven.io. Pokud se chcete k databázi přihlásit například
-pomocí nástroje datagrip, můžete k tomu využít tyto přihlašovací údaje.
-<img src="database.png" alt="database authentication details">
+pomocí nástroje datagrip, můžete k tomu využít tyto přihlašovací údaje. Certifikát je přístupný v adresáři plannerBackend.
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>Service URI</td>
+    <td>mysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/defaultdb?ssl-mode=REQUIRED</td>
+  </tr>
+  <tr>
+    <td>Database name</td>
+    <td>defaultdb</td>
+  </tr>
+  <tr>
+    <td>Host</td>
+    <td>mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com</td>
+  </tr>
+  <tr>
+    <td>Port</td>
+    <td>10064</td>
+  </tr>
+  <tr>
+    <td>User</td>
+    <td>avnadmin</td>
+  </tr>
+  <tr>
+    <td>Password</td>
+    <td>AVNS_OsQ-AxAVvd-8vaWLLHy</td>
+  </tr>
+  <tr>
+    <td>SSL mode</td>
+    <td>REQUIRED</td>
+  </tr>
+  <tr>
+    <td>CA certificate</td>
+    <td>Show</td>
+  </tr>
+</table>
 <ul>
 </ul>
 
