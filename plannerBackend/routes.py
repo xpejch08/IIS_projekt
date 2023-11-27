@@ -633,7 +633,7 @@ def add_teaching_activity():
             description: Internal server error
         """
     shortcut = request.form.get('subject_shortcut')
-    label = request.form.get('label')
+    label = shortcut + " - " + request.form.get('label')
     duration = request.form.get('duration')
     repetition = request.form.get('repetition')
     preferences = request.form.get('preferences')
