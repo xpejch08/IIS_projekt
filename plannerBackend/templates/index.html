@@ -70,8 +70,13 @@
           <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Sign up as a student</button>
-        <a href="login.html" class="btn btn-link btn-block">Already have an account?</a>
       </form>
+
+       <div id="guest" class="form-group">
+        <form id="guestForm" action="http://localhost:5000/login_view" method="post">
+          <input type="submit" class="btn btn-secondary btn-block" value="Already have an account"/>
+        </form>
+      </div>
 
       <div id="guest" class="form-group">
         <form id="guestForm" action="http://localhost:5000/infoReroute" method="post">

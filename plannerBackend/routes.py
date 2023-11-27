@@ -58,7 +58,8 @@ def login_required_student(f):
         return f(*args, **kwargs)
     return decorated_function
 
-@my_routes.route('/login_view', methods=['GET'])
+
+@my_routes.route('/login_view', methods=['GET', 'POST'])
 def login_view():
     return render_template('login.html')
 
@@ -124,6 +125,11 @@ def login():
 @my_routes.route('/admViewReroute', methods=['GET', 'POST'])
 def admin_view_reroute():
     return render_template('views/admin/adminview.html', role=session.get('user_role'))
+
+
+@my_routes.route('/signIn', methods=['GET', 'POST'])
+def sign_in_reroute():
+    return render_template('index.html', role=session.get('user_role'))
 
 
 @my_routes.route('/studentViewReroute', methods=['GET', 'POST'])

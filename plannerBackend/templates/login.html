@@ -76,8 +76,13 @@
         </div>
         <!-- Include other form fields as needed -->
         <button class="btn btn-primary btn-block" type="submit">Log in</button>
-        <a href="index.html" class="btn btn-link btn-block">Not registered yet?</a>
       </form>
+
+      <div class="form-group">
+        <form id="guest" action="http://localhost:5000/signIn" method="post">
+          <input type="submit" class="btn btn-secondary btn-block" value="Not registered yet"/>
+        </form>
+      </div>
 
       <div id="guest" class="form-group">
         <form id="guestForm" action="http://localhost:5000/infoReroute" method="post">
