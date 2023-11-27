@@ -89,18 +89,19 @@ def create_user():
           500:
             description: Error in user creation
         """
-    data = request.get_json()
 
+    name = request.form.get('name')
+    password = request.form.get('password')
     # Assuming your JSON data includes 'name', 'password', and 'role' fields
-    new_user = User(name=data['name'], password=generate_password_hash(data['password']), role=5)
+    new_user = User(name=name, password=generate_password_hash(password), role=5)
 
     try:
         db.session.add(new_user)
         db.session.commit()
-        return render_template('views/admin/admCreateUser.html')
+        return render_template('login.html')
     except Exception as e:
         db.session.rollback()
-        return render_template('views/admin/admCreateUser.html', error="An unexpected error occurred. Please try again.")
+        return render_template('login.html', error="User probably already exists. Please try again.")
 
 
 @my_routes.route('/login', methods=['POST'])
@@ -117,7 +118,7 @@ def login():
         session['user_role'] = user.role
         return render_template('views/admin/adminview.html', role=session.get('user_role'))
     else:
-        return 'Invalid username or password', 401
+        return render_template('login.html', error="Invalid username or password")
 
 
 @my_routes.route('/admViewReroute', methods=['GET', 'POST'])
@@ -152,7 +153,6 @@ def create_course_instructor_reroute():
 @login_required_admin
 def create_user_reroute():
     return render_template('views/admin/admCreateUser.html')
-
 
 @my_routes.route('/updateUserReroute', methods=['GET', 'POST'])
 @login_required_admin
