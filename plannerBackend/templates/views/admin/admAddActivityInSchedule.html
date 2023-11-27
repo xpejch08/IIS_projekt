@@ -484,11 +484,12 @@ function drawRow(row,day){
                 newDiv2.style.height = "60px";
                 newDiv2.style.backgroundColor = "white";
                 newDiv2.onclick = function() {changeColor(this)};
-                newDiv2.innerHTML = line.shortcut + "<br>"+ line.teaching_activity_name + "<br>" + line.room_name + "<br>" + line.instructor_name;
-                newDiv2.style.fontSize = "12px";
+                newDiv2.innerHTML = line.shortcut + "<br>"+ line.teaching_activity_name + "<br>" + line.room_name + "<br>" + line.instructor_name + "<br>" + line.repetition;
+                newDiv2.style.padding = "0px";
+                newDiv2.style.fontSize = "11px";
                 newDiv2.style.textAlign = "center";
                 newDiv2.style.verticalAlign = "middle";
-                newDiv2.style.lineHeight = "12px";
+                newDiv2.style.lineHeight = "11px";
 
                 newDiv.appendChild(newDiv2);
 

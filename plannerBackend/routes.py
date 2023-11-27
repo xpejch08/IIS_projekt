@@ -131,6 +131,13 @@ def student_view_reroute():
     activities = get_teaching_activities()
     rooms=get_rooms()
     return render_template('views/studentview.html', schedule=schedule, activities=activities, rooms=rooms)
+@my_routes.route('/infoReroute', methods=['GET', 'POST'])
+def info_view_reroute():
+    schedule = get_schedule()
+    activities = get_teaching_activities()
+    rooms=get_rooms()
+    subjects=get_subjects()
+    return render_template('info.html', schedule=schedule, activities=activities, rooms=rooms, subjects=subjects)
 
 @my_routes.route('/createCourseInstructorReroute', methods=['GET', 'POST'])
 @login_required_guarantor

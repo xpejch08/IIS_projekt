@@ -71,16 +71,16 @@
     <div class="form-container">
       <form id="subjectForm" action="http://localhost:5000/addSubject" method="post">
         <div class="form-group">
-          <input type="text" class="form-control" id="shortcut" name="shortcut" placeholder="Abbreviation" required>
+          <input type="text" class="form-control" id="shortcut" name="shortcut" placeholder="Abbreviation (required)" required>
         </div>
         <div class="form-group">
-          <input type="text" class="form-control" id="name" name="name" placeholder="Title" required>
+          <input type="text" class="form-control" id="name" name="name" placeholder="Title (required)" required>
         </div>
         <div class="form-group">
           <input type="text" class="form-control" id="annotation" name="annotation" placeholder="Annotation">
         </div>
         <div class="form-group">
-          <input type="number" class="form-control" id="credits" name="credits" placeholder="Number of credits" min="0" max="20" required>
+          <input type="number" class="form-control" id="credits" name="credits" placeholder="Number of credits (required)[0-20]" min="0" max="20" required>
         </div>
         <div class="form-group">
           <label class="label" for="id_guarantor">Choose a course guarantor</label>
