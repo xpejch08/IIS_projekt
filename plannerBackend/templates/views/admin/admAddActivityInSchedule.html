@@ -136,7 +136,12 @@
     {% endif %}
 
     <h2>CREATE AN ACTIVITY IN THE SCHEDULE</h2>
+  <div class="horizont">
+  <ul id="activitiesList">
+
+    </ul>
     <div class="form-container">
+
       <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
         <div class="form-group">
           <label class="label" for="teaching_activity_label">Choose an activity</label>
@@ -227,6 +232,7 @@
         </div>
       </div>
     </div>
+  </div>
 
   <div class="vertical">
     <div id="timetable" class="timetable">
@@ -316,12 +322,13 @@ function listActivities(activities, schedule){
             for (let sch of schedule) {
                 if (sch.teaching_activity_name === act.label) {
                     underline = "";
-                    break;
+
                 } else {
                     underline = "color: grey;";
                 }
+
             }
-            activitiesList.append("<li style='text-align: left;" + underline + "'>" + act.shortcut + ' - ' + act.label + "</li>")
+            activitiesList.append("<li style='text-align: left;" + underline + "'>" + act.shortcut + ' - ' + act.label + '<br>' + 'Duration: ' + act.duration +"</li>")
 
         });
 
