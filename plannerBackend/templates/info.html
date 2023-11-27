@@ -26,7 +26,7 @@
         subjects.sort((a, b) => a.shortcut.localeCompare(b.shortcut));
         var activitiesList = $("#activitiesList");
         subjects.forEach(act => {
-            activitiesList.append("<li style='text-align: left;'>" + act.shortcut + ' - ' + act.name + '<br>' + 'Credits: ' + act.credits + '<br>' + 'Annotation: ' + act.annotation +"</li>");
+            activitiesList.append("<li style='text-align: left;'>" + act.shortcut + ' - ' + act.name + '<br>' + 'Credits: ' + act.credits + '<br>' + 'Annotation: ' + act.annotation +'<br>' + 'Guarantor: ' + act.guarantor_name +"</li>");
         });
     }
 </script>
