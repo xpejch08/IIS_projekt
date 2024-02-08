@@ -4,3 +4,4 @@ IISVENV
 __pycache__/
 _pycache_
 venv
+ca.pem
