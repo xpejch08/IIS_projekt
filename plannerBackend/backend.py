@@ -19,9 +19,6 @@ def create_app():
 
     Session(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = (
-        "mysql+pymysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@"
-        "mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/"
-        "defaultdb?ssl_ca=ca.pem"
     )
   # MySQL database
     db.init_app(app)
