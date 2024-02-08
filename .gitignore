@@ -1,0 +1,6 @@
+.idea
+backend
+IISVENV
+__pycache__/
+_pycache_
+venv

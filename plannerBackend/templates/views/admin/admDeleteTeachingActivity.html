@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .form-container {
+      max-width: 50%;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-top: 50px;
+    }
+
+    .label {
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    {% if error %}
+      <div class="alert alert-danger">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <h2>DELETE A TEACHING ACTIVITY</h2>
+    <div class="form-container">
+      <form id="teachingactivityForm" action="http://localhost:5000/deleteTeachingActivity" method="post">
+        <div class="form-group">
+          <label class="label" for="label">Choose a teaching activity to delete</label>
+          <!-- Updated the input to a dropdown/select list -->
+          <select class="form-control" id="label" name="label" required>
+            <!-- Options will be dynamically added here -->
+              {% for teachingactivity in teaching_list %}
+                <option value="{{ teachingactivity.label }}">{{ teachingactivity.label }}</option>
+              {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Delete a teaching activity</button>
+      </form>
+
+      <div class="form-group">
+        <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
+          <input type="submit" class="btn btn-secondary btn-block" value="Back to the administrator menu"/>
+        </form>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title text-white" id="modalTitle">Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+              <!-- Content will be dynamically updated here -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" onclick="location.reload();" class="btn btn-secondary btn-block" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

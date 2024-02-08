@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+	integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+	crossorigin="anonymous"
+	referrerpolicy="no-referrer"
+></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin-top: 50px;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .form-container {
+      max-width: 50%;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-top: 50px;
+    }
+
+    .label {
+      width: 100%;
+      text-align: center;
+    }
+    .vertical{
+
+    }
+    .horizont{
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    }
+    .timetable{
+        justify-self: right;
+        width: 1480px;
+        margin-left: 10px;
+        margin-top: 50px;
+        margin-right: 40px;
+        height: 0px;
+        border: black solid 1px;
+        align-items: center;
+
+    }
+    .times{
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        background-color: #007bff;
+        border: black solid 1px;
+        align-items: center;
+    }
+    .time{
+
+
+        border-left: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+
+    }
+    .dayname{
+
+        flex-direction: column;
+        justify-content: left;
+        border: black solid 1px;
+        width: 40px;
+
+        text-justify: auto;
+        text-align: center;
+    }
+    .activity{
+        padding: 2px;
+        border: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: white;
+
+
+    }
+    .info{
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+    {% if error %}
+      <div class="alert alert-danger">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <h2>CREATE AN ACTIVITY IN THE SCHEDULE</h2>
+  <div class="horizont">
+  <ul id="activitiesList">
+
+    </ul>
+    <div class="form-container">
+
+      <form id="activityForm" action="http://localhost:5000/getInstructorsForActivityReroute" method="post">
+        <div class="form-group">
+          <label class="label" for="teaching_activity_label">Choose an activity</label>
+          <select class="form-control" id="teaching_activity_label" name="teaching_activity" required onchange="this.form.submit()">
+            <option value="" selected>-- Select an option --</option>
+            {% for activity in activities %}
+              <option value="{{ activity.label }}">{{ activity.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+
+      <form id="addActivityInSchedule" action="http://localhost:5000/addActivityInSchedule" method="post">
+        <div class="form-group">
+          <label class="label" for="picked_label">Selected activity</label>
+          <select class="form-control" id="picked_label" name="picked_label">
+            {% for picked_activity in picked_activities %}
+              <option value="{{ picked_activity.label }}">{{ picked_activity.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="label" for="room_title">Choose a room</label>
+          <select class="form-control" id="room_title" name="room_title" required>
+            {% for room in rooms %}
+              <option value="{{ room.title }}">{{ room.title }}</option>
+            {% endfor %}
+          </select>
+        </div> 
+        <div class="form-group">
+          <label class="label" for="instructor_name">Choose an instructor</label>
+          <select class="form-control" id="instructor_name" name="instructor_name" required>
+            {% for instructor in instructors %}
+              <option value="{{ instructor.teacher_name }}">{{ instructor.teacher_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="label" for="day">Choose a day</label>
+            <select type="number" class="form-control" id="day" name="day"  required>
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+            </select>
+        </div>
+        <div class="form-group">
+          <label class="label" for="hour">Choose an hour</label>
+            <select type="number" class="form-control" id="hour" name="hour" required>
+                <option value="1">7:00</option>
+                <option value="2">8:00</option>
+                <option value="3">9:00</option>
+                <option value="4">10:00</option>
+                <option value="5">11:00</option>
+                <option value="6">12:00</option>
+                <option value="7">13:00</option>
+                <option value="8">14:00</option>
+                <option value="9">15:00</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Create an activity in the schedule</button>
+      </form>
+
+      <div class="form-group">
+        <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
+          <input type="submit" class="btn btn-secondary btn-block"value="Back to the administrator menu"/>
+        </form>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal" id="dynamicContentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalTitle">Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vertical">
+    <div id="timetable" class="timetable">
+
+        <div class="times">
+            <div style="background-color: white" class="dayname"></div>
+            <div class="time">7:00-8:00</div>
+            <div class="time">8:00-9:00</div>
+            <div class="time">9:00-10:00</div>
+            <div class="time">10:00-11:00</div>
+            <div class="time">11:00-12:00</div>
+            <div class="time">12:00-13:00</div>
+            <div class="time">13:00-14:00</div>
+            <div class="time">14:00-15:00</div>
+            <div class="time">15:00-16:00</div>
+        </div>
+        <div>
+            <div class="horizont">
+            <div class="dayname" style="background-color: indianred">Mo</div>
+                <div id="Monday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: cornflowerblue ">Tu</div>
+                <div id="Tuesday">
+
+                </div>
+            </div>
+            <div class="horizont">
+                <div class="dayname" style="background-color: darkgoldenrod">We</div>
+                <div id="Wednesday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: olivedrab">Th</div>
+                <div id="Thursday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: wheat" >Fr</div>
+                <div id="Friday">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    </div>
+<script>
+
+var activity_list = {{ activities|tojson|safe }};
+var schedule = {{ schedule|tojson|safe }};
+var rooms = {{ rooms|tojson|safe }};
+$(document).ready(function() {
+    console.log(schedule);
+    listActivities(activity_list,schedule);
+    updateActivities(schedule,activity_list,rooms);
+    let dayLists = loadDays(schedule);
+    console.log(dayLists);
+    mondayRows = createRows(dayLists.MondayList);
+    tuesdayRows = createRows(dayLists.TuesdayList);
+    wednesdayRows = createRows(dayLists.WednesdayList);
+    thursdayRows = createRows(dayLists.ThursdayList);
+    fridayRows = createRows(dayLists.FridayList);
+    let rows = [mondayRows, tuesdayRows, wednesdayRows, thursdayRows, fridayRows];
+    drawTimetable(rows);
+
+});
+function changeColor(element) {
+    var currentColor = element.style.backgroundColor;
+    // Change the color based on the current color
+    if (currentColor === 'lightgreen') {
+        element.style.backgroundColor = 'white';
+    } else {
+        element.style.backgroundColor = 'lightgreen';
+    }
+}
+function listActivities(activities, schedule){
+        activities.sort((a, b) => a.shortcut.localeCompare(b.shortcut));
+        var activitiesList = $("#activitiesList");
+        let underline = "";
+        activities.forEach(act => {
+            for (let sch of schedule) {
+                if (sch.teaching_activity_name === act.label) {
+                    underline = "";
+
+                } else {
+                    underline = "color: grey;";
+                }
+
+            }
+            activitiesList.append("<li style='text-align: left;" + underline + "'>" + act.shortcut + ' - ' + act.label + '<br>' + 'Duration: ' + act.duration +'<br>' + 'Preference: ' + act.preference +"</li>")
+
+        });
+
+}
+function findSpan(hour,duration){
+    let span = [];
+    for(let i=hour; i<hour+duration; i++){
+		span.push(i)
+    }
+    return span;
+
+}
+function updateActivities(schedule, activities,rooms) {
+    console.log("updateActivities");
+    for (let sch of schedule) {
+        console.log(sch);
+        for (let act of activities) {
+            if (sch.teaching_activity_name === act.label) {
+                sch.repetition = act.repetition;
+                sch.shortcut = act.shortcut;
+                sch.teaching_activity_name = act.label;
+                sch.duration = act.duration;
+                sch.preference = act.preference;
+                for (let rm of rooms){
+                    if (rm.title === sch.room_name) {
+
+                        sch.span=findSpan(sch.hour,sch.duration)
+                    }
+                }
+            }
+        }
+    }
+    console.log(schedule);
+    return schedule;
+}
+/********************************LOADING TIMETABLE***********************/
+function loadDays(schedule){
+    let mondayList = [];
+    let tuesdayList = [];
+    let wednesdayList = [];
+    let thursdayList = [];
+    let fridayList = [];
+    for (let sch of schedule){
+        if (sch.day === 1){
+            mondayList.push(sch);
+        }
+        if (sch.day === 2){
+            tuesdayList.push(sch);
+        }
+        if (sch.day === 3){
+            wednesdayList.push(sch);
+        }
+        if (sch.day === 4){
+            thursdayList.push(sch);
+        }
+        if (sch.day === 5){
+            fridayList.push(sch);
+        }
+    }
+    mondayList.sort((a, b) => a.hour - b.hour);
+    tuesdayList.sort((a, b) => a.hour - b.hour);
+    wednesdayList.sort((a, b) => a.hour - b.hour);
+    thursdayList.sort((a, b) => a.hour - b.hour);
+    fridayList.sort((a, b) => a.hour - b.hour);
+
+
+
+    return {
+        MondayList: mondayList,
+        TuesdayList: tuesdayList,
+        WednesdayList: wednesdayList,
+        ThursdayList: thursdayList,
+        FridayList: fridayList
+    };
+}
+function createRows(dl){
+    let collisionList = [dl];
+
+    while (findCollision(collisionList[collisionList.length - 1], collisionList) === 0) {
+        // Continue to find collisions until none are found
+    }
+    console.log("collisionList")
+    console.log(collisionList);
+    return collisionList;
+}
+function findCollision(collision,collisionList){
+    let collisionnew = [];
+    let found = false;
+    if (collision.length === 1){
+        return 1;
+    }
+    let len = collision.length;
+    for (let i=0; i<len; i++) {
+        for(let j=i+1; j<len; j++) {
+            let j = i + 1;
+            if (collision[i].span.includes(collision[j].hour)) {
+                collisionnew.push(collision[j]);
+                //collision.slice(i,1);
+                //collision.length = collision.length - 1;
+                collision.splice(j, 1);
+                found = true;
+            } else {
+                found = false;
+            }
+            len = collision.length;
+        }
+
+    }
+    if (found === true) {
+        if (collisionList.length === 0){
+            collisionList.push(collision);
+        }
+        let collisionnewset = [...new Set(collisionnew)];
+        collisionList.push(collisionnewset);
+        return 0;
+    }else {
+        return 1;
+    }
+}
+function drawTimetable(rows){
+    console.log("drawTimetable");
+    console.log(rows);
+    drawRow(rows[0], "Monday");
+    drawRow(rows[1], "Tuesday");
+    drawRow(rows[2], "Wednesday");
+    drawRow(rows[3], "Thursday");
+    drawRow(rows[4], "Friday");
+}
+function drawRow(row,day){
+    console.log("drawRow");
+    let dayDiv = document.getElementById(day);
+
+    for (var i = 0; i < row.length; i++) {
+            var newDiv = document.createElement("div");
+            newDiv.id=day+"-"+i;
+            newDiv.className = "horizont";
+            newDiv.style.border = "black solid 1px";
+            newDiv.style.width = 160*9 + "px";
+            newDiv.style.paddingBottom = "2px";
+            dayDiv.appendChild(newDiv);
+            let stopline = 0;
+            for (let line of row[i]){
+                var newDiv2 = document.createElement("div");
+                newDiv2.id=day+"-"+i+"-"+line.hour;
+                newDiv2.className = "activity";
+                newDiv2.style.width = line.duration * 160 + "px";
+                let marg = (line.hour-1) * 160 - stopline;
+                console.log(marg);
+                newDiv2.style.marginLeft = marg + "px";
+                newDiv2.style.marginBottom = "2px";
+                stopline = stopline + line.duration * 160 +marg;
+                console.log(stopline);
+                newDiv2.style.height = "60px";
+                newDiv2.style.backgroundColor = "white";
+                newDiv2.onclick = function() {changeColor(this)};
+                newDiv2.innerHTML = line.shortcut + "<br>"+ line.teaching_activity_name + "<br>" + line.room_name + "<br>" + line.instructor_name + "<br>" + line.repetition;
+                newDiv2.style.padding = "0px";
+                newDiv2.style.fontSize = "11px";
+                newDiv2.style.textAlign = "center";
+                newDiv2.style.verticalAlign = "middle";
+                newDiv2.style.lineHeight = "11px";
+
+                newDiv.appendChild(newDiv2);
+
+            }
+
+    }
+}
+function generatePDF() {
+            // Get the element containing the content to be converted
+            var content = document.getElementById('timetable');
+
+            // Configuration for html2pdf
+            var options = {
+                margin: 10,
+                filename: 'generated-document.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 1 },
+                jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+            };
+
+            // Use html2pdf to generate the PDF
+            html2pdf(content, options);
+        }
+</script>
+
+</body>
+</html>

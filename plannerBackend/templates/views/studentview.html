@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script
+	src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+	integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+	crossorigin="anonymous"
+	referrerpolicy="no-referrer"
+></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<style>
+    .vertical{
+
+    }
+    .horizont{
+    display: flex;
+    justify-content: flex-start;
+    text-align: center;
+    }
+    .timetable{
+        justify-self: right;
+        width: 1480px;
+        margin-left: 10px;
+        margin-top: 50px;
+        margin-right: 40px;
+
+        border: black solid 1px;
+        align-items: center;
+
+    }
+    .times{
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        background-color: #007bff;
+        border: black solid 1px;
+        align-items: center;
+    }
+    .time{
+
+
+        border-left: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+
+    }
+    .dayname{
+
+        flex-direction: column;
+        justify-content: left;
+        border: black solid 1px;
+        width: 40px;
+
+        text-justify: auto;
+        text-align: center;
+    }
+    .activity{
+        padding: 2px;
+        border: black solid 1px;
+        width: 160px;
+        text-align: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: white;
+
+
+    }
+    .info{
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+</style>
+</head>
+
+<body>
+
+
+
+<div class="horizont">
+    <div class="vertical">
+
+        <div style="padding-top: 20px">
+            <h1 style="margin-top:10px; margin-left: 10px ">Timetable</h1>
+            <form id="guest" action="http://localhost:5000/admViewReroute" method="post">
+                <input type="submit" class="btn btn-secondary" value="Back to admin menu" />
+            </form>
+        </div>
+
+        <h3>All activities:</h3>
+        <br>
+        <p>Click on the activity in the timetable to mark it as preferred</p>
+        <button class="btn btn-primary" onclick="generatePDF()">Save as PDF</button>
+        <ul id="activitiesList">
+
+        </ul>
+    </div>
+    <div class="vertical">
+    <div id="timetable" class="timetable">
+
+        <div class="times">
+            <div style="background-color: white" class="dayname"></div>
+            <div class="time">7:00-8:00</div>
+            <div class="time">8:00-9:00</div>
+            <div class="time">9:00-10:00</div>
+            <div class="time">10:00-11:00</div>
+            <div class="time">11:00-12:00</div>
+            <div class="time">12:00-13:00</div>
+            <div class="time">13:00-14:00</div>
+            <div class="time">14:00-15:00</div>
+            <div class="time">15:00-16:00</div>
+        </div>
+        <div>
+            <div class="horizont">
+            <div class="dayname" style="background-color: indianred">Mo</div>
+                <div id="Monday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: cornflowerblue ">Tu</div>
+                <div id="Tuesday">
+
+                </div>
+            </div>
+            <div class="horizont">
+                <div class="dayname" style="background-color: darkgoldenrod">We</div>
+                <div id="Wednesday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: olivedrab">Th</div>
+                <div id="Thursday">
+
+                </div>
+            </div>
+            <div  class="horizont">
+                <div class="dayname" style="background-color: wheat" >Fr</div>
+                <div id="Friday">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<script>
+
+var activity_list = {{ activities|tojson|safe }};
+var schedule = {{ schedule|tojson|safe }};
+var rooms = {{ rooms|tojson|safe }};
+$(document).ready(function() {
+    console.log(schedule);
+    listActivities(activity_list,schedule);
+    updateActivities(schedule,activity_list,rooms);
+    let dayLists = loadDays(schedule);
+    console.log(dayLists);
+    mondayRows = createRows(dayLists.MondayList);
+    tuesdayRows = createRows(dayLists.TuesdayList);
+    wednesdayRows = createRows(dayLists.WednesdayList);
+    thursdayRows = createRows(dayLists.ThursdayList);
+    fridayRows = createRows(dayLists.FridayList);
+    let rows = [mondayRows, tuesdayRows, wednesdayRows, thursdayRows, fridayRows];
+    drawTimetable(rows);
+
+});
+function changeColor(element) {
+    var currentColor = element.style.backgroundColor;
+    // Change the color based on the current color
+    if (currentColor === 'lightgreen') {
+        element.style.backgroundColor = 'white';
+    } else {
+        element.style.backgroundColor = 'lightgreen';
+    }
+}
+function listActivities(activities, schedule){
+        activities.sort((a, b) => a.shortcut.localeCompare(b.shortcut));
+        var activitiesList = $("#activitiesList");
+        let underline = "";
+        activities.forEach(act => {
+            for (let sch of schedule) {
+                if (sch.teaching_activity_name === act.label) {
+                    underline = "";
+                    break;
+                } else {
+                    underline = "color: grey;";
+                }
+            }
+            activitiesList.append("<li style='text-align: left;" + underline + "'>" + act.shortcut + ' - ' + act.label + "</li>")
+
+        });
+
+}
+function findSpan(hour,duration){
+    let span = [];
+    for(let i=hour; i<hour+duration; i++){
+		span.push(i)
+    }
+    return span;
+
+}
+function updateActivities(schedule, activities,rooms) {
+    console.log("updateActivities");
+    for (let sch of schedule) {
+        console.log(sch);
+        for (let act of activities) {
+            if (sch.teaching_activity_name === act.label) {
+                sch.repetition = act.repetition;
+                sch.shortcut = act.shortcut;
+                sch.teaching_activity_name = act.label;
+                sch.duration = act.duration;
+                sch.preference = act.preference;
+                for (let rm of rooms){
+                    if (rm.title === sch.room_name) {
+
+                        sch.span=findSpan(sch.hour,sch.duration)
+                    }
+                }
+            }
+        }
+    }
+    console.log(schedule);
+    return schedule;
+}
+/********************************LOADING TIMETABLE***********************/
+function loadDays(schedule){
+    let mondayList = [];
+    let tuesdayList = [];
+    let wednesdayList = [];
+    let thursdayList = [];
+    let fridayList = [];
+    for (let sch of schedule){
+        if (sch.day === 1){
+            mondayList.push(sch);
+        }
+        if (sch.day === 2){
+            tuesdayList.push(sch);
+        }
+        if (sch.day === 3){
+            wednesdayList.push(sch);
+        }
+        if (sch.day === 4){
+            thursdayList.push(sch);
+        }
+        if (sch.day === 5){
+            fridayList.push(sch);
+        }
+    }
+    mondayList.sort((a, b) => a.hour - b.hour);
+    tuesdayList.sort((a, b) => a.hour - b.hour);
+    wednesdayList.sort((a, b) => a.hour - b.hour);
+    thursdayList.sort((a, b) => a.hour - b.hour);
+    fridayList.sort((a, b) => a.hour - b.hour);
+
+
+
+    return {
+        MondayList: mondayList,
+        TuesdayList: tuesdayList,
+        WednesdayList: wednesdayList,
+        ThursdayList: thursdayList,
+        FridayList: fridayList
+    };
+}
+function createRows(dl){
+    let collisionList = [dl];
+
+    while (findCollision(collisionList[collisionList.length - 1], collisionList) === 0) {
+        // Continue to find collisions until none are found
+    }
+    console.log("collisionList")
+    console.log(collisionList);
+    return collisionList;
+}
+function findCollision(collision,collisionList){
+    let collisionnew = [];
+    let found = false;
+    if (collision.length === 1){
+        return 1;
+    }
+    let len = collision.length;
+    for (let i=0; i<len; i++) {
+        for(let j=i+1; j<len; j++) {
+            let j = i + 1;
+            if (collision[i].span.includes(collision[j].hour)) {
+                collisionnew.push(collision[j]);
+                //collision.slice(i,1);
+                //collision.length = collision.length - 1;
+                collision.splice(j, 1);
+                found = true;
+            } else {
+                found = false;
+            }
+            len = collision.length;
+        }
+
+    }
+    if (found === true) {
+        if (collisionList.length === 0){
+            collisionList.push(collision);
+        }
+        let collisionnewset = [...new Set(collisionnew)];
+        collisionList.push(collisionnewset);
+        return 0;
+    }else {
+        return 1;
+    }
+}
+function drawTimetable(rows){
+    console.log("drawTimetable");
+    console.log(rows);
+    drawRow(rows[0], "Monday");
+    drawRow(rows[1], "Tuesday");
+    drawRow(rows[2], "Wednesday");
+    drawRow(rows[3], "Thursday");
+    drawRow(rows[4], "Friday");
+}
+function drawRow(row,day){
+    console.log("drawRow");
+    let dayDiv = document.getElementById(day);
+
+    for (var i = 0; i < row.length; i++) {
+            var newDiv = document.createElement("div");
+            newDiv.id=day+"-"+i;
+            newDiv.className = "horizont";
+            newDiv.style.border = "black solid 1px";
+            newDiv.style.width = 160*9 + "px";
+            newDiv.style.paddingBottom = "2px";
+            dayDiv.appendChild(newDiv);
+            let stopline = 0;
+            for (let line of row[i]){
+                var newDiv2 = document.createElement("div");
+                newDiv2.id=day+"-"+i+"-"+line.hour;
+                newDiv2.className = "activity";
+                newDiv2.style.width = line.duration * 160 + "px";
+                let marg = (line.hour-1) * 160 - stopline;
+                console.log(marg);
+                newDiv2.style.marginLeft = marg + "px";
+                newDiv2.style.marginBottom = "2px";
+                stopline = stopline + line.duration * 160 +marg;
+                console.log(stopline);
+                newDiv2.style.height = "60px";
+                newDiv2.style.backgroundColor = "white";
+                newDiv2.onclick = function() {changeColor(this)};
+                newDiv2.innerHTML = line.shortcut + "<br>"+ line.teaching_activity_name + "<br>" + line.room_name + "<br>" + line.instructor_name + "<br>" + line.repetition;
+                newDiv2.style.padding = "0px";
+                newDiv2.style.fontSize = "11px";
+                newDiv2.style.textAlign = "center";
+                newDiv2.style.verticalAlign = "middle";
+                newDiv2.style.lineHeight = "11px";
+
+                newDiv.appendChild(newDiv2);
+
+            }
+
+    }
+}
+function generatePDF() {
+            // Get the element containing the content to be converted
+            var content = document.getElementById('timetable');
+
+            // Configuration for html2pdf
+            var options = {
+                margin: 10,
+                filename: 'generated-document.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: { scale: 1 },
+                jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+            };
+
+            // Use html2pdf to generate the PDF
+            html2pdf(content, options);
+        }
+</script>
+
+</body>
+</html>

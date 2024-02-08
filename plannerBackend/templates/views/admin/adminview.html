@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      margin-top: 50px;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    .col {
+      text-align: center;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      margin-top: 20px;
+      max-width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-danger {
+      background-color: #007bff;
+      margin-top: 20px;
+      max-width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .action-group {
+      margin: 20px auto;
+      max-width: 720px;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      background-color: #fff;
+      text-align: center;
+    }
+
+    p {
+      color: #6c757d;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    {% if error %}
+      <div class="alert alert-danger">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-md-auto">
+        <h1>MENU</h1>
+      </div>
+      <div class="col">
+        <form action="http://localhost:5000/logout" method="post">
+          <input type="submit" class="btn btn-secondary" value="Log out"/>
+        </form>
+      </div>
+    </div>
+
+    <div class="action-group">
+      <p>Views</p>
+      <form id="student" action="http://localhost:5000/studentViewReroute" method="post" style="padding-bottom: 0">
+        <input type="submit" class="btn btn-primary btn-block" value="View schedule"/>
+      </form>
+      <form id="student" action="http://localhost:5000/infoReroute" method="post" style="padding-bottom: 0">
+        <input type="submit" class="btn btn-primary btn-block" value="View courses"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Users</p>
+      <form id="admin" action="http://localhost:5000/createUserReroute" method="post">
+        <input  type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Create a user"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/updateUserReroute" method="post">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Update a user"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/deleteUserReroute" method="post">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Delete a user"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Courses</p>
+      <form id="admin" action="http://localhost:5000/createSubjectReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Create a course"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/updateSubjectReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Update a course"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/deleteSubjectReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Delete a course"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Rooms</p>
+      <form id="admin" action="http://localhost:5000/createRoomReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Create a room"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/deleteRoomReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Delete a room"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Teaching activities</p>
+      <form id="garant" action="http://localhost:5000/createTeachingActivityReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role > 2 else 'btn-primary' }} btn-block" value="Create a teaching activity"/>
+      </form>
+      <form id="garant" action="http://localhost:5000/deleteTeachingActivityReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role > 2 else 'btn-primary' }} btn-block" value="Delete a teaching activity"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Teachers</p>
+      <form id="garant" action="http://localhost:5000/createCourseInstructorReroute" method="get">
+        <input  type="submit" class="btn {{ 'btn-danger' if role > 2 else 'btn-primary' }} btn-block" value="Add a course teacher"/>
+      </form>
+      <form id="garant" action="http://localhost:5000/deleteCourseInstructorReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role > 2 else 'btn-primary' }} btn-block" value="Remove a course teacher"/>
+      </form>
+      <form id="admin" action="http://localhost:5000/setSubjectGuarantorReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role != 1 else 'btn-primary' }} btn-block" value="Set a course guarantor"/>
+      </form>
+      <form id="teacher" action="http://localhost:5000/setTeacherPreferencesReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if role > 3 else 'btn-primary' }} btn-block" value="Set teacher preferences"/>
+      </form>
+    </div>
+
+    <div class="action-group">
+      <p>Activities</p>
+      <form id="timetabler" action="http://localhost:5000/addTeachingActivityInScheduleReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if (role !=1 and role!=4) else 'btn-primary' }} btn-block" value="Create an activity in the schedule"/>
+      </form>
+      <form id="timetabler" action="http://localhost:5000/deleteTeachingActivityFromScheduleReroute" method="get">
+        <input type="submit" class="btn {{ 'btn-danger' if (role !=1 and role!=4) else 'btn-primary' }} btn-block" value="Delete an activity from the schedule"/>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
+
+<!-- TODO: POPUP kdyz uspech admin akce -->

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Projekt IIS</title>
+    <style type="text/css">
+    	table { border-collapse: collapse; }
+    	td, th { border: 1px solid black; padding: 0.3em 0.5em; text-align: left; }
+    	dt { font-weight: bold; margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+
+<!-- Zkontrolujte prosím nastavení kódování v hlavičce dokumentu 
+     podle použitého editoru -->
+
+<h1>Plánování rozvrhů</h1> <!-- Nahradte názvem svého zadání -->
+
+<dl>
+	<dt>Autoři</dt>
+	<dd>Štěpán Pejchar <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xpejch08stud.fit.vutbr.cz">xpejch08@stud.fit.vutbr.cz</a> -
+		Vedoucí týmu, implementace backendu, vytvoření databáze.
+	</dd>
+	<dd>Ondřej Češka <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xceska07@stud.fit.vutbr.cz">xceska07@stud.fit.vutbr.cz</a> -
+		Implementace frontendu, dynamický rozvrh, komunikace FE a BE.
+	</dd>
+	<dd>David Kvaček <!-- Nahraďte skutečným jménem a e-mailem autora a popisem činnosti -->
+	    <a href="mailto:xkvace00@stud.fit.vutbr.cz">xkvace00@stud.fit.vutbr.cz</a> -
+		Implementace frontendu, design, zprovoznění na serveru.
+	</dd>
+	<dt>URL aplikace</dt>
+	<dd><a href="https://planning-schedules-406316.lm.r.appspot.com">https://planning-schedules-406316.lm.r.appspot.com</a></dd>
+</dl>
+
+<h2>Uživatelé systému pro testování</h2>
+<table>
+<tr><th>Login</th><th>Heslo</th><th>Role</th></tr>
+<tr><td>admin</td><td>admin</td><td>administrátor</td></tr>
+<tr><td>guarantor</td><td>guarantor</td><td>garant předmětu</td></tr>
+<tr><td>teacher</td><td>teacher</td><td>vyučující</td></tr>
+<tr><td>timetabler</td><td>timetabler</td><td>rozvrhář</td></tr>
+<tr><td>student</td><td>student</td><td>student</td></tr>
+</table>
+
+<h3>Video</h3>
+
+<dd><a href="https://www.youtube.com/watch?v=ttp6LtFSmT0">https://www.youtube.com/watch?v=ttp6LtFSmT0</a></dd>
+
+<h2>Implementace</h2>
+<p>Jako nástroj pro backend jsme zvolili Python framework Flask. Všechny backend routy jsou implementovány v souboru routes.py.
+	Model databáze byl vytořen pomocí MySql. Abychom mohli s databází komunikovat, používáme sqlAlchemy modul z Pythonu, tedy model databáze implementovaný v souboru db.py.
+	Základní konfigurace Flask aplikace je v souboru backend.py. V soboru backend.py také probíhá inicializace databáze.
+	Soubor routes.py je rozdělen na rerouts, wrappers a routes. Rerouts jsou routy používané pro přesměrování. Wrappery jsou používány pro kontrolu přihlášených uživatelů.
+	Pomocí Flask Session kontrolujeme, zda má uživatel přístup k určité stránce, pokud ne, je přesměrován na menu stránku, kde je ohlášen error.
+	Zbylé routes slouží pro reálnou funkci informačního systému. Komunikují s databází a získávají z ní data, která jsou následně zobrazena na frontendu.
+	Slouží například pro vytváření záznamů, jejich editaci, mazání, nebo zobrazení. Pro interaktivní a realtime frontend jsme využili modul Jinja2,
+	který slouží například pro práci s proměnnými poslaných z backendu. Pro to, aby byl informační systém bezpečný, jsou všechna hesla při vytvoření účtu
+	hashovány pomocí modulu werkzeug.security. Session také není permanentní a po uplynutí určitého času vyprší.
+</p>
+
+<h3>Databáze</h3>
+
+<img src="ER.jpg" alt="Database entity relationship diagram">
+
+<h2>Instalace</h2>
+
+Pro instalaci stačí rozbalit adresář a v něm pomocí nástroje pip naistalovat potřebné moduly pro běh aplikace. Pokud nemáte na zařízení
+pip nainstalován, můžete tak docílit takto: $ sudo apt install python3-pip	#python 3.
+Potřebné moduly můžete nainstalovat pomocí příkazu $ pip install -r requirements.txt. Pro vývoj byl použit python 3.10.
+Pokud jsou tyto podmínky splněny, stačí použít příkaz python backend.py a aplikace by měla být spuštěna na localhostu na portu 5000.
+Úvodní stránka aplikace s názvem index.html se nachází v adresáři plannerBackend/templates. Z této obrazovky se uživatel může zaregistrovat nebo přihlásit a následně je schopen používat aplikaci.
+Databáze je permanentně uložena na serveru a není potřeba ji inicializovat. Databázi jsme konfigurovali a inicializovali pomocí souboru
+databaseFix.sql v adresáři database. Pomocí souboru delete.sql se databáze smaže. Databáže beží pomocí služby aiven.io. Pokud se chcete k databázi přihlásit například
+pomocí nástroje datagrip, můžete k tomu využít tyto přihlašovací údaje. Certifikát je přístupný v adresáři plannerBackend.
+<table>
+  <tr>
+    <th>Property</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>Service URI</td>
+    <td>mysql://avnadmin:AVNS_OsQ-AxAVvd-8vaWLLHy@mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com:10064/defaultdb?ssl-mode=REQUIRED</td>
+  </tr>
+  <tr>
+    <td>Database name</td>
+    <td>defaultdb</td>
+  </tr>
+  <tr>
+    <td>Host</td>
+    <td>mysql-iis-xpejch08-pejcharstepan-iis.a.aivencloud.com</td>
+  </tr>
+  <tr>
+    <td>Port</td>
+    <td>10064</td>
+  </tr>
+  <tr>
+    <td>User</td>
+    <td>avnadmin</td>
+  </tr>
+  <tr>
+    <td>Password</td>
+    <td>AVNS_OsQ-AxAVvd-8vaWLLHy</td>
+  </tr>
+  <tr>
+    <td>SSL mode</td>
+    <td>REQUIRED</td>
+  </tr>
+  <tr>
+    <td>CA certificate</td>
+    <td>Show</td>
+  </tr>
+</table>
+<ul>
+</ul>
+
+</body>
+</html>

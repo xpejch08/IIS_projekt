@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+  <body>
+  <div style="padding-left: 10px; padding-top: 10px">
+  <h1>All courses:</h1>
+    <ul id="activitiesList">
+
+    </ul>
+  </div>
+
+
+
+
+<script>
+    var subjects = {{ subjects|tojson|safe }};
+    $(document).ready(function(){
+        listActivities(subjects);
+    });
+    function listActivities(subjects){
+        subjects.sort((a, b) => a.shortcut.localeCompare(b.shortcut));
+        var activitiesList = $("#activitiesList");
+        subjects.forEach(act => {
+            activitiesList.append("<li style='text-align: left;'>" + act.shortcut + ' - ' + act.name + '<br>' + 'Credits: ' + act.credits + '<br>' + 'Annotation: ' + act.annotation +'<br>' + 'Guarantor: ' + act.guarantor_name +"</li>");
+        });
+    }
+</script>
+  </body>
+</html>

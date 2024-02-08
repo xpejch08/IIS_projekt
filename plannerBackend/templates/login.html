@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozvrchol</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 720px;
+    }
+
+    .form-container {
+      max-width: 50%;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-top: 20px;
+    }
+
+    .form-control {
+      font-size: 1em;
+    }
+
+    .btn {
+      font-size: 1em;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+      {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+      {% endif %}
+    <h2>LOG IN</h2>
+    <div class="form-container">
+      <form id="userForm" action="http://localhost:5000/login" method="post">
+        <div class="form-group">
+          <input class="form-control" type="text" id="name" name="name" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="password" id="password" name="password" placeholder="Password" required>
+        </div>
+        <!-- Include other form fields as needed -->
+        <button class="btn btn-primary btn-block" type="submit">Log in</button>
+      </form>
+
+      <div class="form-group">
+        <form id="guest" action="http://localhost:5000/signIn" method="post">
+          <input type="submit" class="btn btn-secondary btn-block" value="Not registered yet?"/>
+        </form>
+      </div>
+
+      <div id="guest" class="form-group">
+        <form id="guestForm1" action="http://localhost:5000/infoReroute" method="post">
+          <input type="submit" class="btn btn-secondary btn-block" value="Log in as a guest"/>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
